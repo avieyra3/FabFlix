@@ -1,3 +1,9 @@
+DROP SCHEMA moviedb;
+
+CREATE SCHEMA IF NOT EXISTS moviedb;
+
+USE moviedb;
+
 CREATE TABLE IF NOT EXISTS movies (
     id VARCHAR(10) NOT NULL,
     title VARCHAR(100) NOT NULL DEFAULT '',
@@ -34,7 +40,7 @@ CREATE TABLE IF NOT EXISTS genres_in_movies (
 );
 
 CREATE TABLE IF NOT EXISTS creditcards (
-    id VARCHAR(10) NOT NULL,
+    id VARCHAR(20) NOT NULL,
     firstName VARCHAR(50) NOT NULL DEFAULT '',
     lastName VARCHAR(50) NOT NULL DEFAULT '',
     expirationDate DATE NOT NULL,
@@ -57,7 +63,7 @@ CREATE TABLE IF NOT EXISTS sales (
     id INT NOT NULL AUTO_INCREMENT,
     customerId INT NOT NULL,
     movieId VARCHAR(10) NOT NULL,
-    salesDate INT NOT NULL,
+    salesDate DATE NOT NULL,
     FOREIGN KEY(movieId) REFERENCES movies(id),
     FOREIGN KEY(customerId) REFERENCES customers(id),
     PRIMARY KEY(id)
