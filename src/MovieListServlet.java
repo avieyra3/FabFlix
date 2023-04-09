@@ -3,6 +3,8 @@ import com.google.gson.JsonObject;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -12,46 +14,71 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
 
-public class MovieListServlet {
+@WebServlet(name = "MovieListServlet", urlPatterns = "/api/movielist")
+public class MovieListServlet extends HttpServlet {
 
-    public static void main(String[] arg) throws Exception {
-        System.out.println("asdf");
+    private static final long serialVersionUID = 1L;
+    private DataSource dataSource;
 
-        Class.forName("com.mysql.cj.jdbc.Driver");
+    public void init(ServletConfig config) {
+        try {
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+    }
 
-        Connection connection = DriverManager.getConnection("jdbc:mysql:///moviedb?autoReconnect=true&useSSL=false",
-                "mytestuser", "My6$Password");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        if (connection != null) {
+        response.setContentType("application/json");
+
+        PrintWriter out = response.getWriter();
+
+        try (Connection connection = dataSource.getConnection()) {
             System.out.println("Connection established!\n");
-            Statement select = connection.createStatement();
+            Statement statement = connection.createStatement();
             String query = "SELECT * \n" +
                     "FROM movies JOIN ratings\n" +
                     "WHERE movies.id = ratings.movieId\n" +
                     "ORDER BY ratings.rating DESC\n" +
                     "LIMIT 20;";
-            ResultSet result = select.executeQuery(query);
+            ResultSet result = statement.executeQuery(query);
 
-            System.out.println("Query result:");
-            ResultSetMetaData metadata = result.getMetaData();
-            int columnCount = metadata.getColumnCount();
-            System.out.println("There are " + columnCount + " columns");
+            JsonArray jsonArray = new JsonArray();
 
+            while (result.next()) {
+                String movie_id = result.getString("id");
+                String movie_title = result.getString("title");
+                String movie_year = result.getString("year");
+                String movie_director = result.getString("director");
+                String movie_rating = result.getString("rating");
 
-            for (int i = 1; i <= columnCount; i++) {
-                result.next();
-                System.out.println("Type of column " + i + " is " + metadata.getColumnTypeName(i));
-                System.out.println(result.getString(i));
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("movie_id", movie_id);
+                jsonObject.addProperty("movie_title", movie_title);
+                jsonObject.addProperty("movie_year", movie_year);
+                jsonObject.addProperty("movie_director", movie_director);
+                jsonObject.addProperty("movie_rating", movie_rating);
+
+                jsonArray.add(jsonObject);
             }
+            result.close();
+            statement.close();
 
-            System.out.println(result);
+            request.getServletContext().log("getting " + jsonArray.size() + " results");
 
+            out.write(jsonArray.toString());
+            response.setStatus(200);
 
-        } else {
-            System.out.printf("No connection");
+        } catch (Exception e) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("error message", e.getMessage());
+            out.write(jsonObject.toString());
+
+            response.setStatus(500);
+        } finally {
+            out.close();
         }
     }
-
-
 
 }
