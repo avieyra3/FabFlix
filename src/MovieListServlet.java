@@ -30,6 +30,7 @@ public class MovieListServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+        System.out.println("DOGET EXECUTING");
         response.setContentType("application/json");
 
         PrintWriter out = response.getWriter();
@@ -72,7 +73,7 @@ public class MovieListServlet extends HttpServlet {
 
         } catch (Exception e) {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("error message", e.getMessage());
+            jsonObject.addProperty("ERROR:", e.getMessage());
             out.write(jsonObject.toString());
 
             response.setStatus(500);
