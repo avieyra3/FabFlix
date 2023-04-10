@@ -39,7 +39,7 @@ public class MovieListServlet extends HttpServlet {
             System.out.println("Connection established!\n");
             Statement statement = connection.createStatement();
             String query = 
-            "SELECT m.title AS title, m.year AS year, m.director AS director, " +
+            "SELECT m.id AS movie_id, m.title AS title, m.year AS year, m.director AS director, " +
             "SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name), ',', 3) AS genres, " +
             "SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name), ',', 3) AS actors, " +
             "r.rating AS rating " +
@@ -49,7 +49,7 @@ public class MovieListServlet extends HttpServlet {
             "JOIN stars_in_movies sm ON m.id = sm.moviesId " +
             "JOIN stars s ON sm.starId = s.id " +
             "JOIN ratings r ON m.id = r.movieId " +
-            "GROUP BY m.title, m.year, m.director, r.rating " +
+            "GROUP BY m.id, m.title, m.year, m.director, r.rating " +
             "ORDER BY r.rating DESC " +
             "LIMIT 20";
             ResultSet result = statement.executeQuery(query);
@@ -57,6 +57,7 @@ public class MovieListServlet extends HttpServlet {
             JsonArray jsonArray = new JsonArray();
 
             while (result.next()) {
+                String movie_id = resultgetString("movie_id");
                 String movie_title = result.getString("title");
                 String movie_year = result.getString("year");
                 String movie_director = result.getString("director");
@@ -65,6 +66,7 @@ public class MovieListServlet extends HttpServlet {
                 String movie_rating = result.getString("rating");
 
                 JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("movie_id", movie_id);
                 jsonObject.addProperty("movie_title", movie_title);
                 jsonObject.addProperty("movie_year", movie_year);
                 jsonObject.addProperty("movie_director", movie_director);
