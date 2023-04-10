@@ -1,3 +1,9 @@
+DROP SCHEMA moviedb;
+
+CREATE SCHEMA IF NOT EXISTS moviedb;
+
+USE moviedb;
+
 CREATE TABLE IF NOT EXISTS movies (
     id VARCHAR(10) NOT NULL,
     title VARCHAR(100) NOT NULL DEFAULT '',
