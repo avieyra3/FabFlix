@@ -38,7 +38,7 @@ public class MovieListServlet extends HttpServlet {
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("Connection established!\n");
             Statement statement = connection.createStatement();
-            String query = "SELECT * " +
+            String query = "SELECT m.title, m.year, m.director, r.rating " +
                     "FROM movies as m, ratings as r " +
                     "WHERE m.id = r.movieId " +
                     "ORDER BY r.rating DESC " +
