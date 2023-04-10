@@ -10,9 +10,11 @@ function handleMovieResult(resultData) {
         let yearRowHTML = "<th>" + resultData[i]["movie_year"] + "</th>";
         let directorRowHTML = "<th>" + resultData[i]["movie_director"] + "</th>";
         let ratingRowHTML = "<th>" + resultData[i]["movie_rating"] + "</th>";
-        console.log("<tr>" + titleRowHTML + yearRowHTML + directorRowHTML + ratingRowHTML + "</tr>");
+        let genresRowHTML = "<th>" + resultData[i]["movie_genres"] + "</th>";
+        let starsRowHTML = "<th>" + resultData[i]["movie_stars"] + "</th>";
+        console.log("<tr>" + titleRowHTML + yearRowHTML + directorRowHTML + ratingRowHTML + genresRowHTML + starsRowHTML + "</tr>");
 
-        movieTableBodyElement.append("<tr>" + titleRowHTML + yearRowHTML + directorRowHTML + ratingRowHTML + "</tr>");
+        movieTableBodyElement.append("<tr>" + titleRowHTML + yearRowHTML + directorRowHTML + ratingRowHTML + genresRowHTML + starsRowHTML + "</tr>");
     }
 }
 
