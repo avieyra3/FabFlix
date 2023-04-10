@@ -1,5 +1,7 @@
 function handleMovieResult(resultData) {
     //resultData is a JSON
+    console.log("executing handleMovieResult...")
+
     let movieTableBodyElement = jQuery("movie_table_body");
 
     for (let i = 0; i < Math.min(20, resultData.length); i++) {
@@ -17,5 +19,9 @@ jQuery.ajax({
     dataType: "json",
     method: "GET",
     url: "api/movielist",
-    success: (resultData) => handleMovieResult(resultData)
+    success: (resultData) => {
+        console.log("AJAX SUCCESS");
+        handleMovieResult(resultData);
+    },
+    error: () => console.log("AJAX ERROR")
 });
