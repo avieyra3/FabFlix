@@ -48,14 +48,12 @@ public class MovieListServlet extends HttpServlet {
             JsonArray jsonArray = new JsonArray();
 
             while (result.next()) {
-                String movie_id = result.getString("id");
                 String movie_title = result.getString("title");
                 String movie_year = result.getString("year");
                 String movie_director = result.getString("director");
                 String movie_rating = result.getString("rating");
 
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("movie_id", movie_id);
                 jsonObject.addProperty("movie_title", movie_title);
                 jsonObject.addProperty("movie_year", movie_year);
                 jsonObject.addProperty("movie_director", movie_director);
