@@ -53,6 +53,7 @@ public class MovieListServlet extends HttpServlet {
                 String movie_year = result.getString("year");
                 String movie_director = result.getString("director");
                 String movie_rating = result.getString("rating");
+                System.out.println(movie_id + " " + movie_title + " " + movie_year + " " + movie_director + " " + movie_rating);
 
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("movie_id", movie_id);
