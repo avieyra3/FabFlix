@@ -33,11 +33,11 @@
         const starsIdArray = resultData[i]["star_id"].split(",");
         const starsArray = resultData[i]["movie_stars"].split(",");
         rowHTML += "<th>" + 
-            '<a href="single-star.html?star_id=' + starsIdArray[0] + '">'
+            '<a href="single-star.html?id=' + starsIdArray[0] + '">'
             + starsArray[0] + '</a>' + ", " +
-            '<a href="single-star.html?star_id=' + starsIdArray[1] + '">'
+            '<a href="single-star.html?id=' + starsIdArray[1] + '">'
             + starsArray[1] + '</a>' + ", " +
-            '<a href="single-star.html?star_id=' + starsIdArray[2] + '">'
+            '<a href="single-star.html?id=' + starsIdArray[2] + '">'
             + starsArray[2] + '</a>' +
             "</th>";
         rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";
