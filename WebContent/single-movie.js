@@ -52,13 +52,17 @@ function handleResult(resultData) {
         rowHTML += "<th>" + resultData[i]["movie_genres"] + "</th>";
         
         //Since number of stars is not fixed we iterate by the length
+        rowHTML += "<th>";
         const starsIdArray = resultData[i]["star_id"].split(",");
         const starsArray = resultData[i]["movie_stars"].split(",");
         for(let j = 0; j < starsIdArray.length; j++){
-        rowHTML += "<th>" + 
-            '<a href="single-star.html?id=' + starsIdArray[i] + '">'
-            + starsArray[i] + '</a>' + ", ";
+            rowHTML += '<a href="single-star.html?id=' + starsIdArray[j] + '">'
+            + starsArray[j] + '</a>';
+            if(j != starsIdArray.length - 1){
+                rowHTML += ", ";
+            }
         }
+        rowHTML += "</th>"
 
         rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";
         rowHTML += "</tr>";
