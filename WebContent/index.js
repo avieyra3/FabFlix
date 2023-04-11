@@ -16,11 +16,10 @@
  function handleMovieResult(resultData) {
     console.log("handleMovieResult: populating movie table from resultData");
 
-    // Populate the star table
-    // Find the empty table body by id "star_table_body"
+    // Populate the movie table
     let movieTableBodyElement = jQuery("#movie_table_body");
 
-    // Iterate through resultData, no more than 10 entries
+    // Iterate through resultData, no more than 20 entries
     for (let i = 0; i < Math.min(20, resultData.length); i++) {
 
         let rowHTML = "";
@@ -31,14 +30,14 @@
         rowHTML += "<th>" + resultData[i]["movie_year"] + "</th>";
         rowHTML += "<th>" + resultData[i]["movie_director"] + "</th>";
         rowHTML += "<th>" + resultData[i]["movie_genres"] + "</th>";
+        const starsIdArray = resultData[i]["star_id"].split(",");
         const starsArray = resultData[i]["movie_stars"].split(",");
-
         rowHTML += "<th>" + 
-            '<a href="single-star.html?star=' + starsArray[0] + '">'
+            '<a href="single-star.html?star_id=' + starsIdArray[0] + '">'
             + starsArray[0] + '</a>' + ", " +
-            '<a href="single-star.html?star=' + starsArray[1] + '">'
+            '<a href="single-star.html?star_id=' + starsIdArray[1] + '">'
             + starsArray[1] + '</a>' + ", " +
-            '<a href="single-star.html?star=' + starsArray[2] + '">'
+            '<a href="single-star.html?star_id=' + starsIdArray[2] + '">'
             + starsArray[2] + '</a>' +
             "</th>";
         rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";
@@ -57,6 +56,6 @@
 jQuery.ajax({
     dataType: "json", // Setting return data type
     method: "GET", // Setting request method
-    url: "api/movielist", // Setting request url, which is mapped by StarsServlet in Stars.java
-    success: (resultData) => handleMovieResult(resultData) // Setting callback function to handle data returned successfully by the StarsServlet
+    url: "api/movielist", // Setting request url, which is mapped by MovieListServlet in MovieListServlet.java
+    success: (resultData) => handleMovieResult(resultData) // Setting callback function to handle data returned successfully by the MovieListServlet
 });
