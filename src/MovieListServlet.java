@@ -30,17 +30,17 @@ public class MovieListServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        System.out.println("DOGET EXECUTING");
+        System.out.println("MovieList doGet EXECUTING");
         response.setContentType("application/json");
 
         PrintWriter out = response.getWriter();
 
         try (Connection connection = dataSource.getConnection()) {
-            System.out.println("Connection established!\n");
+            System.out.println("MovieList Connection established!\n");
             Statement statement = connection.createStatement();
             String query = 
             "SELECT m.id AS movie_id, m.title AS title, m.year AS year, m.director AS director, " +
-            "SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name), ',', 3) AS genres, " +
+            "SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name SEPARATOR ', '), ', ', 3) AS genres, " +
             "SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name), ',', 3) AS stars, " +
             "SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY s.name), ',', 3) AS star_id," +
             "r.rating AS rating " +

@@ -37,6 +37,7 @@ public class SingleMovieServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+        System.out.println("SingleMovie doGet EXECUTING");
         response.setContentType("application/json"); // Response mime type
 
         // Retrieve parameter id from url request.
@@ -50,12 +51,13 @@ public class SingleMovieServlet extends HttpServlet {
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
+            System.out.println("SingleMovie Connection established!\n");
             // Get a connection from dataSource
 
             // Construct a query with parameter represented by "?"
             String query =
             "SELECT m.id AS movie_id, m.title AS title, m.year AS year, m.director AS director, " +
-            "GROUP_CONCAT(DISTINCT g.name) AS genres, " +
+            "GROUP_CONCAT(DISTINCT g.name SEPARATOR ', ') AS genres, " +
             "GROUP_CONCAT(DISTINCT s.name) AS stars, " +
             "GROUP_CONCAT(DISTINCT s.id ORDER BY s.name) AS star_id," +
             "r.rating AS rating " +
