@@ -2,8 +2,9 @@
     font-family: 'Playfair Display', Serif;
 }
 
+/* sets the height of the header and color*/
 header {
-    background-color: #000;
+    background-color: darkslategray;
     height: 60px;
 }
 
@@ -11,8 +12,9 @@ nav {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 20px; /* adds spacing to the left of the first link */
+    padding: 0 20px;
 }
+
 nav ul {
     list-style-type: none;
     margin: 0;
@@ -20,11 +22,17 @@ nav ul {
     display: flex;
     align-items: center;
 }
+
+/*provides space in between each hyperlink*/
 nav li {
     margin-right: 10px;
 }
+/*sets color of hyperlinks to white*/
+li a {
+    color: white;
+}
 body {
-    background-image: linear-gradient(to right, #a65bff, #6b0c6b);
+    background-color: white;
 }
 
 .center-container {
@@ -34,21 +42,41 @@ body {
 .table {
     width: 1500px;
     margin: 0 auto;
+    color: black;
+    border-radius: 25px;
+    /*box-shadow: 25px 25px 25px black;*/
+}
+/* sets background of the headers row block and the font white*/
+thead tr {
     background-color: #000000;
-    color: white;
-    box-shadow: 50px 50px 50px black;
+    font-size: x-large;
 }
 
 th {
     border: 1px solid #fff;
     padding: 8px;
+    color: white;
+
+}
+tbody {
+    color: black;
+    background-color: lightgrey;
+}
+tbody th {
+    color: black;
+}
+tbody a {
+    font-weight: bold;
+    color: blue;
 }
 
 h1 {
+    padding: 25px;
     text-align: center;
     font-weight: bold;
 }
-
 h2 {
-    color:purple;
+    color: white;
+    font-weight: bold;
+    font-size: xxx-large;
 }
