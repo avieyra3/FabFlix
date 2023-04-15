@@ -5,9 +5,18 @@
 /* sets the height of the header and color*/
 header {
     background-color: darkslategray;
+    color: white;
+    display: flex;
+    align-items: center;
     height: 60px;
+    padding: 20px;
 }
 
+.logo-header{
+    color: white;
+    font-weight: bold;
+    font-size: xxx-large;
+}
 nav {
     display: flex;
     align-items: center;
@@ -33,6 +42,9 @@ li a {
 }
 body {
     background-color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 .center-container {
@@ -75,8 +87,46 @@ h1 {
     text-align: center;
     font-weight: bold;
 }
-h2 {
+
+/* footer at the bottom to display socials */
+footer {
+    background-color: darkslategray;
+    padding: 20px;
+    margin-top: auto;
+    height: 60px;
+    display: flex;
     color: white;
-    font-weight: bold;
-    font-size: xxx-large;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Style the social media buttons */
+.social-media {
+    display: flex;
+    gap: 20px;
+}
+
+.social-media-button {
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Style individual social media buttons */
+.facebook {
+    background-color: #1877F2;
+}
+
+.twitter {
+    background-color: #1DA1F2;
+}
+
+.instagram {
+    background-color: #E1306C;
+}
+
+.footer-head {
+    margin-right: 10px; /* create space between footer-head and the buttons*/
 }
