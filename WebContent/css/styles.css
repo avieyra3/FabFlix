@@ -32,18 +32,19 @@ body {
 }
 
 .table {
-    width: 800px;
+    width: 1500px;
     margin: 0 auto;
-    background-color: #45526e;
+    background-color: #000000;
     color: white;
     border-collapse: collapse;
 }
 
 th {
-    border: 1px solid #000;
+    border: 1px solid #fff;
     padding: 8px;
 }
 
 h1 {
     text-align: center;
+    font-weight: bold;
 }
