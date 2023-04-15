@@ -1,7 +1,11 @@
 * {
     font-family: 'Playfair Display', Serif;
 }
-
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 /* sets the height of the header and color*/
 header {
     background-color: darkslategray;
@@ -39,4 +43,48 @@ nav li {
 /*sets color of hyperlinks to white*/
 li a {
     color: white;
+}
+
+
+/* footer at the bottom to display socials */
+footer {
+    background-color: darkslategray;
+    padding: 20px;
+    margin-top: auto;
+    height: 60px;
+    display: flex;
+    color: white;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Style the social media buttons */
+.social-media {
+    display: flex;
+    gap: 20px;
+}
+
+.social-media-button {
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Style individual social media buttons */
+.facebook {
+    background-color: #1877F2;
+}
+
+.twitter {
+    background-color: #1DA1F2;
+}
+
+.instagram {
+    background-color: #E1306C;
+}
+
+.footer-head {
+    margin-right: 10px; /* create space between footer-head and the buttons*/
 }
