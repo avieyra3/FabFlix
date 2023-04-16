@@ -1,4 +1,4 @@
-DROP SCHEMA moviedb;
+DROP SCHEMA IF EXISTS moviedb;
 
 CREATE SCHEMA IF NOT EXISTS moviedb;
 
