@@ -42,34 +42,36 @@ function handleResult(resultData) {
     // Find the empty table body by id "movie_table_body"
     let movieTableBodyElement = jQuery("#movie_table_body");
 
-    // Concatenate the html tags with resultData jsonObject to create table rows
-    for (let i = 0; i < Math.min(10, resultData.length); i++) {
-        let rowHTML = "";
-        rowHTML += "<tr>";
-        rowHTML += "<th>" + resultData[i]["movie_title"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["movie_year"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["movie_director"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["movie_genres"] + "</th>";
-        
-        //Since number of stars is not fixed we iterate by the length
-        rowHTML += "<th>";
-        const starsIdArray = resultData[i]["star_id"].split(",");
-        const starsArray = resultData[i]["movie_stars"].split(",");
-        for(let j = 0; j < starsIdArray.length; j++){
-            rowHTML += '<a href="single-star.html?id=' + starsIdArray[j] + '">'
-            + starsArray[j] + '</a>';
-            if(j != starsIdArray.length - 1){
-                rowHTML += ", ";
-            }
+    let title = jQuery("#movie_title");
+    title.append("<h1>" + resultData[0]["movie_title"] + "</h1>");
+
+    let movieYear = jQuery("#movie_year");
+    movieYear.append("<span class=data>" + resultData[0]["movie_year"] + "</span>");
+
+    let movieDirector = jQuery("#movie_director");
+    movieDirector.append("<span class=data>" + resultData[0]["movie_director"] + "</span>");
+
+    let movieGenres = jQuery("#movie_genres");
+    movieGenres.append("<span class=data>" + resultData[0]["movie_genres"] + "</span>");
+
+    let movieStars = jQuery("#movie_stars");
+    let starsString = "<span class=data>";
+    const starsIdArray = resultData[0]["star_id"].split(",");
+    console.log(starsIdArray);
+    const starsArray = resultData[0]["movie_stars"].split(",");
+    console.log(starsArray);
+    for(let i = 0; i < starsIdArray.length; i++)
+    {
+        starsString += '<a href="single-star.html?id=' + starsIdArray[i] + '">'
+            + starsArray[i] + '</a>';
+        if(i != starsIdArray.length - 1){
+            starsString += ", ";
         }
-        rowHTML += "</th>"
-
-        rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";
-        rowHTML += "</tr>";
-
-        // Append the row created to the table body, which will refresh the page
-        movieTableBodyElement.append(rowHTML);
     }
+
+    starsString += "</span>";
+    console.log(starsString);
+    movieStars.append(starsString);
 }
 
 /**

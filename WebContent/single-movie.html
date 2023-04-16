@@ -6,14 +6,14 @@
     <meta charset="utf-8">
     <meta name="viewport"
         content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="./css/styles-single-movie.css">
-    <title>Single Movie</title>
+    <title>Movie</title>
 </head>
-    
+
 <body>
     <header>
         <h2 class="logo-header">FabFlix</h2>
@@ -23,35 +23,38 @@
                 <li><a href="#">About</a></li>
                 <li><a href="#">Services</a></li>
                 <li><a href="#">Contact</a></li>
+                <li><a href="index.html">Top 20 Rated Movies</a></li>
             </ul>
         </nav>
     </header>
-    <h1>Single Movie Page</h1>
-    <a href="index.html">Top 20 Rated Movies</a>
-    
-    <h3 id="movie_info"></h3>
-    <table id=movie_table class="table table-striped">
-        <thead>
-        <tr>
-            <th>Movie Title</th>
-            <th>Release Year</th>
-            <th>Director</th>
-            <th>Genres</th>
-            <th>Stars</th>
-            <th>Rating</th>
-            <th>
-        </tr>
-        </thead>
-    
-        <tbody id=movie_table_body></tbody>
-    </table>
-    
+
+    <div class="movie-info">
+        <h1 id="movie_title"></h1>
+        <div class="info-body">
+            <div class="info">
+                <span class="labels">Release Year:</span>
+                <span id="movie_year"></span>
+            </div>
+            <div class="info">
+                <span class="labels">Director:</span>
+                <span id="movie_director"></span>
+            </div>
+            <div class="info">
+                <span class="labels">Genres:</span>
+                <span id="movie_genres"></span>
+            </div>
+            <div class="info">
+                <span class="labels">Stars:</span>
+                <span id="movie_stars"></span>
+            </div>
+        </div>
+    </div>
     <!-- Load jQuery and Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="single-movie.js"></script>
-    
+
     <footer>
         <h3 class="footer-head">Social Media:</h3>
         <div class="social-media">
@@ -61,7 +64,6 @@
         </div>
     </footer>
 </body>
-    
-    
+
+
 </html>
-    
