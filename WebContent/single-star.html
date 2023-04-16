@@ -1,0 +1,77 @@
+<!-- This example is following frontend and backend separation.
+
+This .html performs two steps:
+1. Create a html template skeleton, with all the elements defined (some left empty) and named with ids.
+2. Load single-star.js to populate the data into empty elements.
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/styles-single-star.css">
+    <title>Single Star</title>
+</head>
+<body>
+    <header>
+        <h2 class="logo-header">FabFlix</h2>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="index.html">Top 20 Rated Movies</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1 id="star_name"></h1>
+        <div class="star_body">
+            <div class="info">
+                <span class="labels">DOB:</span>
+                <span id="star_dob"></span>
+            </div>
+            <div class="info">
+                <h1>Movies Featured:</h1>
+                <table id=movie_table class="table table-hover">
+                    <thead class="black white-text">
+                    <tr>
+                        <th>Movie Title</th>
+                    </tr>
+                    </thead>
+                    <tbody id=movie_table_body></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Load jQuery and Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <!-- Load our own JS file -->
+    <!-- The path is relative to single-star.html, since these two files are in the same directory -->
+    <!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
+        otherwise the url is relative to the root path-->
+    <script src="single-star.js"></script>
+    <footer>
+        <h3 class="footer-head">Social Media:</h3>
+        <div class="social-media">
+            <a href="https://www.facebook.com/your-page"><button class="social-media-button facebook">Facebook</button></a>
+            <a href="https://www.twitter.com/your-page"><button class="social-media-button twitter">Twitter</button></a>
+            <a href="https://www.instagram.com/your-page"><button class="social-media-button instagram">Instagram</button></a>
+        </div>
+    </footer>
+</body>
+
+
+</html>
