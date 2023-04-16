@@ -1,0 +1,156 @@
+* {
+    font-family: 'Playfair Display', Serif;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ------------- BEGIN HEADER ------------*/
+/* sets the height of the header and color*/
+header {
+    background-color: darkslategray;
+    color: white;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    padding: 20px;
+}
+
+.logo-header{
+    color: white;
+    font-weight: bold;
+    font-size: xxx-large;
+}
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+/*provides space in between each hyperlink*/
+nav li {
+    margin-right: 10px;
+}
+/*sets color of hyperlinks to white*/
+li a {
+    color: white;
+}
+/* ----------- END of HEADER ------------*/
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+span {
+    font-size: xx-large;
+}
+
+.info {
+    margin-bottom: 10px;
+}
+
+.labels {
+    display: inline-block;
+    font-weight: bold;
+    width: 100%;
+    height: 100%;
+}
+
+.data {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+}
+
+h1 {
+    font-weight: bold;
+}
+/*---------------------TABLE FORMAT---------*/
+.table {
+    width: 1500px;
+    margin: 0 auto;
+    color: black;
+    border-radius: 25px;
+    box-shadow: 25px 25px 25px black;
+
+}
+/* sets background of the headers row block and the font white*/
+thead tr {
+    background-color: #000000;
+    font-size: x-large;
+
+}
+
+th {
+    border: 1px solid #fff;
+    padding: 8px;
+    color: white;
+}
+tbody {
+    color: black;
+    background-color: lightgrey;
+}
+tbody th {
+    color: black;
+}
+tbody a {
+    font-weight: bold;
+    color: blue;
+}
+/*----------------TABLE END----------------*/
+
+/* ------------- FOOTER -------------------*/
+/* footer at the bottom to display socials */
+footer {
+    background-color: darkslategray;
+    padding: 20px;
+    margin-top: auto;
+    height: 60px;
+    display: flex;
+    color: white;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Style the social media buttons */
+.social-media {
+    display: flex;
+    gap: 20px;
+}
+
+.social-media-button {
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Style individual social media buttons */
+.facebook {
+    background-color: #1877F2;
+}
+
+.twitter {
+    background-color: #1DA1F2;
+}
+
+.instagram {
+    background-color: #E1306C;
+}
+
+.footer-head {
+    margin-right: 10px; /* create space between footer-head and the buttons*/
+}

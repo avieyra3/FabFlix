@@ -15,7 +15,7 @@
  * @param target String
  * @returns {*}
  */
-function getParameterByName(target) {
+ function getParameterByName(target) {
     // Get request URL
     let url = window.location.href;
     // Encode target parameter name to url encoding
@@ -42,17 +42,16 @@ function handleResult(resultData) {
 
     // populate the star info h3
     // find the empty h3 body by id "star_info"
-    let starInfoElement = jQuery("#star_info");
+    let starName = jQuery("#star_name");
+    starName.append("<h1>" + resultData[0]["star_name"] + "</h1>");
 
+    let starDOB = jQuery("#star_dob");
     // append two html <p> created to the h3 body, which will refresh the page
     if (resultData[0]["star_birth_year"] == null) {
-        starInfoElement.append("<p>Star Name: " + resultData[0]["star_name"] + "</p>" +
-            "<p>Date Of Birth: N/A </p>");
+        starDOB.append("<span class=data>" + "Unknown" + "</span>");
     } else {
-        starInfoElement.append("<p>Star Name: " + resultData[0]["star_name"] + "</p>" +
-            "<p>Date Of Birth: " + resultData[0]["star_birth_year"] + "</p>");
+        starDOB.append("<span class=data>" + resultData[0]["star_birth_year"] + "</span>");
     }
-
     console.log("handleResult: populating movie table from resultData");
 
     // Populate the star table
