@@ -33,6 +33,26 @@ public class MovieListServlet extends HttpServlet {
         System.out.println("MovieList doGet EXECUTING");
         response.setContentType("application/json");
 
+        String requestType = request.getParameter("request-type");
+        System.out.println(requestType);
+        String queryAmmend = "";
+        if (requestType == null) {
+            ;
+        } else if (requestType.equals("search")) {
+            String title = request.getParameter("title");
+            String year = request.getParameter("year");
+            String director = request.getParameter("director");
+            String star = request.getParameter("star");
+
+            System.out.println(title + " " + year + " " + director + " " + star);
+
+            queryAmmend = "WHERE title LIKE '%" + title + "%' AND director LIKE '%" + director + "%'";
+        } else if (requestType.equals("browse-genre")) {
+            ;
+        } else if (requestType.equals("browse-title")) {
+            ;
+        }
+
         PrintWriter out = response.getWriter();
 
         try (Connection connection = dataSource.getConnection()) {
@@ -50,9 +70,11 @@ public class MovieListServlet extends HttpServlet {
             "JOIN stars_in_movies sm ON m.id = sm.moviesId " +
             "JOIN stars s ON sm.starId = s.id " +
             "JOIN ratings r ON m.id = r.movieId " +
+             queryAmmend +
             "GROUP BY m.id, m.title, m.year, m.director, r.rating " +
             "ORDER BY r.rating DESC " +
             "LIMIT 20";
+            System.out.println(query);
             ResultSet result = statement.executeQuery(query);
 
             JsonArray jsonArray = new JsonArray();
