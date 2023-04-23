@@ -47,6 +47,9 @@ public class MovieListServlet extends HttpServlet {
             System.out.println(title + " " + year + " " + director + " " + star);
 
             queryAmmend = "WHERE title LIKE '%" + title + "%' AND director LIKE '%" + director + "%'";
+            if (year != "") {
+                queryAmmend = queryAmmend + " AND year = '" + year + "' ";
+            }
         } else if (requestType.equals("browse-genre")) {
             ;
         } else if (requestType.equals("browse-title")) {
