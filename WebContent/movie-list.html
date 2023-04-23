@@ -32,7 +32,38 @@
     </nav>
 </header>
 
-<h1>Top 20 Rated Movies</h1>
+<form ACTION="movie-list.html" id="search-bar" METHOD="GET">
+    <input TYPE="hidden" NAME="request-type" VALUE="search">
+    Title: <input TYPE="text" NAME="title">
+    Year: <input TYPE="number" NAME="year">
+    Director: <input TYPE="text" NAME="director">
+    Star's Name: <input TYPE="text" NAME="star">
+
+    <input TYPE="submit" VALUE="Search">
+</form>
+
+<h1>Search Results</h1>
+
+<form ACTION="movie-list.html" id="sorting" METHOD="GET">
+    <input TYPE="hidden" NAME="request-type" VALUE="sort">
+    Movies Per Page: <select NAME="movies-per-page">
+                        <option VALUE="10">10</option>
+                        <option VALUE="25">25</option>
+                        <option VALUE="50">50</option>
+                        <option VALUE="100">100</option>
+                    </select>
+    Sort By: <select NAME="sort-by">
+                <option VALUE="title-asc-rating-asc">Title↑ Rating↑</option>
+                <option VALUE="title-asc-rating-desc">Title↑ Rating↓</option>
+                <option VALUE="title-desc-rating-asc">Title↓ Rating↑</option>
+                <option VALUE="title-desc-rating-desc">Title↓ Rating↓</option>
+                <option VALUE="rating-asc-title-asc">Rating↑ Title↑</option>
+                <option VALUE="rating-asc-title-desc">Rating↑ Title↓</option>
+                <option VALUE="rating-desc-title-asc">Rating↓ Title↑</option>
+                <option VALUE="rating-desc-title-desc">Rating↓ Title↓</option>
+            </select>
+    <input TYPE="submit" VALUE="Sort">
+</form>
 
 <!-- Id "movie" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
 <div class="center-container">
@@ -47,6 +78,7 @@
             <th>Movie Genres</th>
             <th>Movie Stars</th>
             <th>Rating</th>
+            <th>Cart</th>
         </tr>
         </thead>
         <!-- Table body is left empty here, will be populated with the data retrieved with index.js -->
@@ -54,6 +86,14 @@
         <tbody id=movie_table_body></tbody>
     </table>
 </div>
+
+<form ACTION="movie-list.html" id="pagination" METHOD="GET">
+    <button TYPE="submit" NAME="request-type" VALUE="prev">< Prev</button>
+    <span ID="page-number"> 1 </span>
+    <button TYPE="submit" NAME="request-type" VALUE="next">Next ></button>
+</form>
+
+
 <!-- Load jQuery and Bootstrap JS -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
