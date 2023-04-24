@@ -17,13 +17,29 @@ function handleBrowseResult(resultData) {
     console.log("handleBrowseResult: creating links");
 
     // populate webpage with links
-    let browseElementBody = jQuery("#browse-by-genre");
+    let browseGenreElementBody = jQuery("#browse-by-genre");
 
     for (let i = 0; i < resultData.length; i++) {
 
         let rowHTML = "";
         rowHTML += "<a href=movielist.html?genre=" + resultData[i]["genre"] + ">" + resultData[i]["genre"] + "</a><br>";
-        browseElementBody.append(rowHTML);
+        browseGenreElementBody.append(rowHTML);
+    }
+
+    let browseTitleElementBody = jQuery("#browse-by-title");
+
+    for (let i = 97; i <= 122; i++) {
+        let char = String.fromCharCode(i);
+        console.log(char);
+        let rowHTML = "";
+        rowHTML += "<a href=movielist.html?title=" + char + ">" + char + "</a><br>";
+        browseGenreElementBody.append(rowHTML);
+      }
+
+    for (let i = 0; i <= 9; i++) {
+        let rowHTML = "";
+        rowHTML += "<a href=movielist.html?title=" + i + ">" + i + "</a><br>";
+        browseGenreElementBody.append(rowHTML);
     }
 }
 
