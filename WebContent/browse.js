@@ -1,19 +1,8 @@
 /**
- * Retrieve parameter from request URL, matching by parameter name
- * @param target String
- * @returns {*}
- */
- function getParameters() {
-    // Get request URL
-    let url = window.location.href;
-    return url.split('?')[1];
-}
-
-/**
  * Handles the data returned by the API, read the jsonObject and populate data into html elements
  * @param resultData jsonObject
  */
-function handleBrowseResult(resultData) {
+ function handleBrowseResult(resultData) {
     console.log("handleBrowseResult: creating links");
 
     // populate webpage with links
@@ -22,7 +11,7 @@ function handleBrowseResult(resultData) {
     for (let i = 0; i < resultData.length; i++) {
 
         let rowHTML = "";
-        rowHTML += "<a href=movielist.html?genre=" + resultData[i]["genre"] + ">" + resultData[i]["genre"] + "</a><br>";
+        rowHTML += "<a href=movie-list.html?genre=" + resultData[i]["genre"] + ">" + resultData[i]["genre"] + "</a><br>";
         browseGenreElementBody.append(rowHTML);
     }
 
@@ -32,28 +21,26 @@ function handleBrowseResult(resultData) {
         let char = String.fromCharCode(i);
         console.log(char);
         let rowHTML = "";
-        rowHTML += "<a href=movielist.html?title=" + char + ">" + char + "</a><br>";
+        rowHTML += "<a href=movie-list.html?title=" + char + ">" + char + "</a><br>";
         browseTitleElementBody.append(rowHTML);
-      }
+    }
 
     for (let i = 0; i <= 9; i++) {
         let rowHTML = "";
-        rowHTML += "<a href=movielist.html?title=" + i + ">" + i + "</a><br>";
+        rowHTML += "<a href=movie-list.html?title=" + i + ">" + i + "</a><br>";
         browseTitleElementBody.append(rowHTML);
     }
-    browseTitleElementBody.append("<a href=movielist.html?title=*>*</a><br>");
+    browseTitleElementBody.append("<a href=movie-list.html?title=*>*</a><br>");
 }
 
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
  */
-let parameters = getParameters();
-console.log(parameters);
 
-// Makes the HTTP GET request and registers on success callback function 
+// Makes the HTTP GET request and registers on success callback function
 jQuery.ajax({
     dataType: "json", // Setting return data type
     method: "GET", // Setting request method
-    url: "api/browse?" + parameters,
+    url: "api/browse?",
     success: (resultData) => handleBrowseResult(resultData)
 });
