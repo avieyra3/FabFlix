@@ -33,14 +33,15 @@ function handleBrowseResult(resultData) {
         console.log(char);
         let rowHTML = "";
         rowHTML += "<a href=movielist.html?title=" + char + ">" + char + "</a><br>";
-        browseGenreElementBody.append(rowHTML);
+        browseTitleElementBody.append(rowHTML);
       }
 
     for (let i = 0; i <= 9; i++) {
         let rowHTML = "";
         rowHTML += "<a href=movielist.html?title=" + i + ">" + i + "</a><br>";
-        browseGenreElementBody.append(rowHTML);
+        browseTitleElementBody.append(rowHTML);
     }
+    browseTitleElementBody.append("<a href=movielist.html?title=*>*</a><br>");
 }
 
 /**
