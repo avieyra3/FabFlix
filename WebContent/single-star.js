@@ -59,8 +59,8 @@ function handleResult(resultData) {
     let movieTableBodyElement = jQuery("#movie_table_body");
 
     // Concatenate the html tags with resultData jsonObject to create table rows
-    let star_movies_list = resultData[0]["star_movies"].split(", ");
-    let star_movie_ids_list = resultData[0]["star_movie_ids"].split(", ");
+    let star_movies_list = resultData[0]["star_movies"].split("|");
+    let star_movie_ids_list = resultData[0]["star_movie_ids"].split("|");
 
     for (let i = 0; i < star_movies_list.length; i++) {
         let rowHTML = "";
