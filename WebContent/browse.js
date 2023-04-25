@@ -11,7 +11,7 @@
     for (let i = 0; i < resultData.length; i++) {
 
         let rowHTML = "";
-        rowHTML += "<a href=movie-list.html?broswe-genre=" + resultData[i]["genre"] + ">" + resultData[i]["genre"] + "</a><br>";
+        rowHTML += "<a href=movie-list.html?request-type=genre=" + resultData[i]["genre"] + ">" + resultData[i]["genre"] + "</a><br>";
         browseGenreElementBody.append(rowHTML);
     }
 
@@ -21,16 +21,16 @@
         let char = String.fromCharCode(i);
         console.log(char);
         let rowHTML = "";
-        rowHTML += "<a href=movie-list.html?browse-title=" + char + ">" + char + "</a><br>";
+        rowHTML += "<a href=movie-list.html?request-type=prefix=" + char + ">" + char + "</a><br>";
         browseTitleElementBody.append(rowHTML);
     }
 
     for (let i = 0; i <= 9; i++) {
         let rowHTML = "";
-        rowHTML += "<a href=movie-list.html?browse-title=" + i + ">" + i + "</a><br>";
+        rowHTML += "<a href=movie-list.html??request-type=prefix=" + i + ">" + i + "</a><br>";
         browseTitleElementBody.append(rowHTML);
     }
-    browseTitleElementBody.append("<a href=movie-list.html?browse-title=*>*</a><br>");
+    browseTitleElementBody.append("<a href=movie-list.html?request-type=prefix=*>*</a><br>");
 }
 
 /**

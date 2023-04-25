@@ -32,9 +32,10 @@ public class MovieListServlet extends HttpServlet {
 
         System.out.println("MovieList doGet EXECUTING");
         response.setContentType("application/json");
-
+        System.out.println("request query: " + request.getQueryString());
         String requestType = request.getParameter("request-type");
-        System.out.println(requestType);
+        System.out.println("request type: " + requestType);
+        System.out.println(requestType.split("=")[1]);
         String queryAmmend = "";
         if (requestType == null) {
             ;
@@ -50,10 +51,12 @@ public class MovieListServlet extends HttpServlet {
             if (year != "") {
                 queryAmmend = queryAmmend + " AND year = '" + year + "' ";
             }
-        } else if (requestType.equals("browse-genre")) {
-            ;
-        } else if (requestType.equals("browse-title")) {
-            ;
+        } else if (requestType.split("=")[0].equals("genre")) {
+            String genre = requestType.split("=")[1];
+            queryAmmend = "AND genres.name = " + "'" + genre + "'";
+        } else if (requestType.split("=")[0].equals("prefix")) {
+            String prefix = requestType.split("=")[1];
+            queryAmmend = "AND title LIKE '" + prefix + "%'";
         }
 
         PrintWriter out = response.getWriter();
@@ -148,6 +151,4 @@ public class MovieListServlet extends HttpServlet {
             out.close();
         }
     }
-
-
 }

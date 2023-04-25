@@ -13,7 +13,7 @@
  * @param target String
  * @returns {*}
  */
-function getParameters() {
+ function getParameters() {
     // Get request URL
     let url = window.location.href;
     // // Encode target parameter name to url encoding
@@ -36,6 +36,7 @@ function getParameters() {
  */
 function handleMovieResult(resultData) {
     console.log("handleMovieResult: populating movie table from resultData");
+    console.log(resultData);
 
     // Populate the movie table
     let movieTableBodyElement = jQuery("#movie_table_body");
@@ -51,17 +52,18 @@ function handleMovieResult(resultData) {
         rowHTML += "<th>" + resultData[i]["movie_year"] + "</th>";
         rowHTML += "<th>" + resultData[i]["movie_director"] + "</th>";
         rowHTML += "<th>" + resultData[i]["movie_genres"] + "</th>";
-        const starsIdArray = resultData[i]["star_id"].split(",");
-        const starsArray = resultData[i]["movie_stars"].split(",");
-        rowHTML += "<th>" +
-            '<a href="single-star.html?id=' + starsIdArray[0] + '">'
-            + starsArray[0] + '</a>' + ", " +
-            '<a href="single-star.html?id=' + starsIdArray[1] + '">'
-            + starsArray[1] + '</a>' + ", " +
-            '<a href="single-star.html?id=' + starsIdArray[2] + '">'
-            + starsArray[2] + '</a>' +
-            "</th>";
+        const starsIdArray = resultData[i]["star_id"].split(", ");
+        const starsArray = resultData[i]["movie_stars"].split(", ");
+        rowHTML += "<th>";
+        let j = 0;
+        while (j < Math.min(3 - 1, starsIdArray.length - 1)) {
+            rowHTML += '<a href="single-star.html?id=' + starsIdArray[j] + '">' + starsArray[j] + '</a>' + ", ";
+            j++;
+        }
+        rowHTML += '<a href="single-star.html?id=' + starsIdArray[j] + '">' + starsArray[j] + '</a>' + "</th>";
+
         rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";
+        rowHTML += "<th><form ACTION='/api/cart' id='add-to-cart' METHOD='POST'><button TYPE='button' NAME='add-to-cart' VALUE='" + resultData[i]['movie_id'] + "'>Add</button></form></th>";
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
