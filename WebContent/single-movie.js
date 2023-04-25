@@ -56,9 +56,9 @@ function handleResult(resultData) {
 
     let movieStars = jQuery("#movie_stars");
     let starsString = "<span class=data>";
-    const starsIdArray = resultData[0]["star_id"].split(",");
+    const starsIdArray = resultData[0]["star_id"].split("|");
     console.log(starsIdArray);
-    const starsArray = resultData[0]["movie_stars"].split(",");
+    const starsArray = resultData[0]["movie_stars"].split("|");
     console.log(starsArray);
     for(let i = 0; i < starsIdArray.length; i++)
     {
@@ -70,6 +70,14 @@ function handleResult(resultData) {
     }
 
     starsString += "</span>";
+
+    let movieRating = jQuery("#movie_rating");
+    movieRating.append("<span class=data>" + resultData[0]["movie_rating"] + "</span>");
+
+    let cart = jQuery("#cart");
+    cart.append("<span class=data>" + "<form ACTION='/api/cart' id='add-to-cart' METHOD='POST'>" +
+        "<button TYPE='button' NAME='add-to-cart' VALUE='" + resultData[0]['movie_id'] + "'>Add</button></form>" + "</span>");
+
     console.log(starsString);
     movieStars.append(starsString);
 }
