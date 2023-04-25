@@ -51,11 +51,18 @@ function handleMovieResult(resultData) {
             + resultData[i]["movie_title"] + '</a>' + "</th>";
         rowHTML += "<th>" + resultData[i]["movie_year"] + "</th>";
         rowHTML += "<th>" + resultData[i]["movie_director"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["movie_genres"] + "</th>";
+        const genresArray = resultData[i]["movie_genres"].split(", ");
+        rowHTML += "<th>";
+        let j = 0;
+        while (j < Math.min(3 - 1, genresArray.length - 1)) {
+            rowHTML += "<a href=movie-list.html?request-type=genre=" + genresArray[j] + ">" + genresArray[j] + "</a>" + ", ";
+            j++;
+        }
+        rowHTML += "<a href=movie-list.html?request-type=genre=" + genresArray[j] + ">" + genresArray[j] + "</a>" + "</th>";
         const starsIdArray = resultData[i]["star_id"].split(", ");
         const starsArray = resultData[i]["movie_stars"].split(", ");
         rowHTML += "<th>";
-        let j = 0;
+        j = 0;
         while (j < Math.min(3 - 1, starsIdArray.length - 1)) {
             rowHTML += '<a href="single-star.html?id=' + starsIdArray[j] + '">' + starsArray[j] + '</a>' + ", ";
             j++;

@@ -52,7 +52,16 @@ function handleResult(resultData) {
     movieDirector.append("<span class=data>" + resultData[0]["movie_director"] + "</span>");
 
     let movieGenres = jQuery("#movie_genres");
-    movieGenres.append("<span class=data>" + resultData[0]["movie_genres"] + "</span>");
+    let genresString = "<span class=data>";
+    const genresArray = resultData[0]["movie_genres"].split("|");
+    for (let i = 0; i < genresArray.length; i++) {
+        genresString += "<a href=movie-list.html?request-type=genre=" + genresArray[i] + ">" + genresArray[i] + "</a>";
+        if (i != genresArray.length - 1) {
+            genresString += ", ";
+        }
+    }
+    genresString += "</span>";
+    movieGenres.append(genresString);
 
     let movieStars = jQuery("#movie_stars");
     let starsString = "<span class=data>";
@@ -68,8 +77,9 @@ function handleResult(resultData) {
             starsString += ", ";
         }
     }
-
     starsString += "</span>";
+    console.log(starsString);
+    movieStars.append(starsString);
 
     let movieRating = jQuery("#movie_rating");
     movieRating.append("<span class=data>" + resultData[0]["movie_rating"] + "</span>");
@@ -78,8 +88,7 @@ function handleResult(resultData) {
     cart.append("<span class=data>" + "<form ACTION='/api/cart' id='add-to-cart' METHOD='POST'>" +
         "<button TYPE='button' NAME='add-to-cart' VALUE='" + resultData[0]['movie_id'] + "'>Add</button></form>" + "</span>");
 
-    console.log(starsString);
-    movieStars.append(starsString);
+
 }
 
 /**

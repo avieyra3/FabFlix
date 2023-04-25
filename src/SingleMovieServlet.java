@@ -94,9 +94,9 @@ public class SingleMovieServlet extends HttpServlet {
                         "ORDER BY genres.name;";
                 ResultSet resultGenres = statementGenres.executeQuery(queryGenres);
                 while (resultGenres.next()) {
-                    movie_genres += resultGenres.getString("name") + ", ";
+                    movie_genres += resultGenres.getString("name") + "|";
                 }
-                movie_genres = movie_genres.substring(0, movie_genres.length() - 2);
+                movie_genres = movie_genres.substring(0, movie_genres.length() - 1);
 
                 Statement statementStars = conn.createStatement();
                 String queryStars = "SELECT stars.name, stars.id, count(*) as movie_counts\n" +
