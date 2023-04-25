@@ -13,7 +13,7 @@
  * @param target String
  * @returns {*}
  */
-function getParameters() {
+ function getParameters() {
     // Get request URL
     let url = window.location.href;
     // // Encode target parameter name to url encoding
