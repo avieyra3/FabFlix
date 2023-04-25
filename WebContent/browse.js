@@ -27,7 +27,7 @@
 
     for (let i = 0; i <= 9; i++) {
         let rowHTML = "";
-        rowHTML += "<a href=movie-list.html??request-type=prefix=" + i + ">" + i + "</a><br>";
+        rowHTML += "<a href=movie-list.html?request-type=prefix=" + i + ">" + i + "</a><br>";
         browseTitleElementBody.append(rowHTML);
     }
     browseTitleElementBody.append("<a href=movie-list.html?request-type=prefix=*>*</a><br>");
