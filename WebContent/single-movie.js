@@ -86,9 +86,12 @@ function handleResult(resultData) {
 
     let cart = jQuery("#cart");
     cart.append("<span class=data>" + "<form ACTION='api/cart' id='add-to-cart' METHOD='POST'>" +
-        "<button TYPE='submit' NAME='item' VALUE='" + resultData[0]['movie_id'] + "'>Add</button></form>" + "</span>");
+                                    "<input TYPE='hidden' NAME='item' VALUE='" + resultData[0]['movie_id'] + "'>" +
+                                    "<input TYPE='submit' VALUE='Add'></form>" + "</span>");
 
-
+    let addToCart = $("#add-to-cart");
+    console.log(addToCart);
+    addToCart.submit(handleCartInfo);
 }
 
 /**
@@ -105,3 +108,26 @@ jQuery.ajax({
     url: "api/single-movie?id=" + movieId, // Setting request url, which is mapped by StarsServlet in Stars.java
     success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
 });
+
+function handleCartInfo(cartEvent) {
+    console.log("submit cart form");
+    /**
+     * When users click the submit button, the browser will not direct
+     * users to the url defined in HTML form. Instead, it will call this
+     * event handler when the event is triggered.
+     */
+    cartEvent.preventDefault();
+
+    $.ajax("api/cart", {
+        method: "POST",
+        data: $(this).serialize(),
+        success: function () {
+            console.log("Movie Successfully Added!");
+            alert("Movie Successfully Added!");
+        },
+        error: function () {
+            console.log("Failed To Add Movie");
+            alert("Failed To Add Movie");
+        }
+    });
+}

@@ -51,6 +51,8 @@ function handleCartInfo(cartEvent) {
      * event handler when the event is triggered.
      */
     cartEvent.preventDefault();
+    console.log(cart);
+    console.log($(this))
 
     $.ajax("api/cart", {
         method: "POST",
