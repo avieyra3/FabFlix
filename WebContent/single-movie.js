@@ -85,8 +85,8 @@ function handleResult(resultData) {
     movieRating.append("<span class=data>" + resultData[0]["movie_rating"] + "</span>");
 
     let cart = jQuery("#cart");
-    cart.append("<span class=data>" + "<form ACTION='/api/cart' id='add-to-cart' METHOD='POST'>" +
-        "<button TYPE='button' NAME='add-to-cart' VALUE='" + resultData[0]['movie_id'] + "'>Add</button></form>" + "</span>");
+    cart.append("<span class=data>" + "<form ACTION='api/cart' id='add-to-cart' METHOD='POST'>" +
+        "<button TYPE='submit' NAME='item' VALUE='" + resultData[0]['movie_id'] + "'>Add</button></form>" + "</span>");
 
 
 }

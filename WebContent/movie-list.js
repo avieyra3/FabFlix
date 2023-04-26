@@ -70,7 +70,7 @@ function handleMovieResult(resultData) {
         rowHTML += '<a href="single-star.html?id=' + starsIdArray[j] + '">' + starsArray[j] + '</a>' + "</th>";
 
         rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";
-        rowHTML += "<th><form ACTION='/api/cart' id='add-to-cart' METHOD='POST'><button TYPE='button' NAME='add-to-cart' VALUE='" + resultData[i]['movie_id'] + "'>Add</button></form></th>";
+        rowHTML += "<th><form ACTION='api/cart' id='add-to-cart' METHOD='POST'><button TYPE='submit' NAME='item' VALUE='" + resultData[i]['movie_id'] + "'>Add</button></form></th>";
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
