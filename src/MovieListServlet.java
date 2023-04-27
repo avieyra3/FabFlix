@@ -5,6 +5,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -13,6 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
+import java.util.ArrayList;
+
 
 @WebServlet(name = "MovieListServlet", urlPatterns = "/api/movielist")
 public class MovieListServlet extends HttpServlet {
@@ -29,16 +32,23 @@ public class MovieListServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
         System.out.println("MovieList doGet EXECUTING");
         response.setContentType("application/json");
         System.out.println("request query: " + request.getQueryString());
         String requestType = request.getParameter("request-type");
         System.out.println("request type: " + requestType);
-        if (requestType.split("=").length > 1) {
-            System.out.println(requestType.split("=")[1]);
-        }
-        String queryAmmend = "";
+
+        // These strings are the default/preliminary value before modification
+        // this is the data sql query string that will be modified according to search/browse and sort.
+        String query = "SELECT DISTINCT movies.id, movies.title, movies.year, movies.director, rating\n" +
+                        "FROM movies JOIN ratings JOIN stars_in_movies JOIN stars JOIN genres_in_movies JOIN genres\n" +
+                        "WHERE movies.id = ratings.movieId AND movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id \n" +
+                        "AND movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id\n";
+        String queryAmmend = ""; // this is sql string that will include info from search/browse
+        String sortBy = " ORDER BY title ASC, rating ASC"; // the default sort setting
+        String pageSize = " LIMIT 10"; // the default page size
+        String offset = ""; // offset will be modded via pagination
+
         if (requestType == null) {
             ;
         } else if (requestType.equals("search")) {
@@ -66,15 +76,49 @@ public class MovieListServlet extends HttpServlet {
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("MovieList Connection established!\n");
             Statement statement = connection.createStatement();
-            String query = "SELECT DISTINCT movies.id, movies.title, movies.year, movies.director, rating\n" +
-                    "FROM movies JOIN ratings JOIN stars_in_movies JOIN stars JOIN genres_in_movies JOIN genres\n" +
-                    "WHERE movies.id = ratings.movieId AND movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id \n" +
-                    "AND movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id\n" +
-                    queryAmmend +
-                    "ORDER BY ratings.rating DESC\n" +
-                    "LIMIT 20;";
-            ResultSet result = statement.executeQuery(query);
 
+            // if request type is sort, then use the pre-existing sql query
+            if (requestType.equals("sort")) {
+                sortBy = request.getParameter("sort-by");
+                pageSize = request.getParameter("page-size");
+
+                // fetch the previous sql query using session
+                HttpSession session = request.getSession();
+                ArrayList<String> queryHistory = (ArrayList<String>) session.getAttribute("queryHistory");
+                query = queryHistory.get(0);
+                query += " " + sortBy + " " + pageSize;
+                System.out.println("query with sort: " + query);
+
+            } else {
+                //----------create a session object----------------
+                // clear previous cached sql session query since we are starting a new request-type=search/browse
+                HttpSession session = request.getSession();
+                ArrayList<String> queryHistory = (ArrayList<String>) session.getAttribute("queryHistory");
+                if (queryHistory == null){
+                    queryHistory = new ArrayList<>();
+                }
+                else {
+                    queryHistory.clear();
+                    session.setAttribute("queryHistory", queryHistory);
+                }
+                // add the search/browse portion to the query
+                query += queryAmmend;
+                // Add the sql query to the session queryHistory arrayList
+                queryHistory.add(query);
+                // set it in the session
+                session.setAttribute("queryHistory", queryHistory);
+                // print out to debug
+                System.out.println("size of arraylist: " + queryHistory.size());
+                for (int i = 0; i < queryHistory.size(); i++){
+                    System.out.println("queryHistory: " + queryHistory.get(i));
+                }
+
+                // add default sort and page number 
+                query += sortBy + pageSize;
+                System.out.println("default query: " + query);
+            }
+
+            ResultSet result = statement.executeQuery(query);
             JsonArray jsonArray = new JsonArray();
 
             while (result.next()) {
@@ -92,31 +136,36 @@ public class MovieListServlet extends HttpServlet {
                         "FROM movies JOIN genres_in_movies JOIN genres\n" +
                         "WHERE movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id " +
                         "AND movies.id = '" + movie_id + "'\n" +
-                        "ORDER BY genres.name LIMIT 3;";
+                        "LIMIT 3;";
                 ResultSet resultGenres = statementGenres.executeQuery(queryGenres);
                 while (resultGenres.next()) {
                     movie_genres += resultGenres.getString("name") + ", ";
                 }
-                movie_genres = movie_genres.substring(0, movie_genres.length() - 2);
 
                 Statement statementStars = connection.createStatement();
-                String queryStars = "SELECT stars.name, stars.id, count(*) as movie_counts\n" +
-                        "FROM movies JOIN stars_in_movies JOIN stars JOIN stars_in_movies as sm2 JOIN movies as m2\n" +
-                        "WHERE movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id AND movies.id = '"
-                            + movie_id + "' AND stars.id = sm2.starId AND sm2.moviesId = m2.id\n" +
-                        "GROUP BY stars.id\n" +
-                        "ORDER BY movie_counts DESC, stars.name ASC\n" +
+                String queryStars = "SELECT stars.name\n" +
+                        "FROM movies JOIN stars_in_movies JOIN stars\n" +
+                        "WHERE movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id " +
+                        "AND movies.id = '" + movie_id + "'\n" +
                         "LIMIT 3;";
                 ResultSet resultStars = statementStars.executeQuery(queryStars);
                 while (resultStars.next()) {
                     movie_stars += resultStars.getString("name") + ", ";
-                    movie_star_IDs += resultStars.getString("id") + ", ";
                 }
-                movie_stars = movie_stars.substring(0, movie_stars.length() - 2);
-                movie_star_IDs = movie_star_IDs.substring(0, movie_star_IDs.length() - 2);
+
+                Statement statementStarIDs = connection.createStatement();
+                String queryStarIDs = "SELECT stars.id\n" +
+                        "FROM movies JOIN stars_in_movies JOIN stars\n" +
+                        "WHERE movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id " +
+                        "AND movies.id = '" + movie_id + "'\n" +
+                        "LIMIT 3;";
+                ResultSet resultStarIDs = statementStarIDs.executeQuery(queryStarIDs);
+                while (resultStarIDs.next()) {
+                    movie_star_IDs += resultStarIDs.getString("id") + ", ";
+                }
 
                 System.out.println(movie_id + " " + movie_title + " " + movie_year + " " + movie_director
-                        + " " + movie_rating + " " + movie_genres + " " + movie_stars + " " + movie_star_IDs);
+                        + " " + movie_rating + " " + movie_genres + " " + movie_stars);
 
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("movie_id", movie_id);
@@ -130,6 +179,7 @@ public class MovieListServlet extends HttpServlet {
 
                 jsonArray.add(jsonObject);
             }
+
             result.close();
             statement.close();
 
