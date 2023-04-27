@@ -27,12 +27,14 @@ function handleCartArray(resultArray) {
     console.log(resultArray);
     let item_list = $("#item_list");
     // change it to html list
-    let res = "<ul>";
+    let res = "";
     for (let i = 0; i < resultArray.length; i++) {
         // each item will be in a bullet point
-        res += "<li>" + resultArray[i] + "</li>";
+        res += "<tr>";
+        res += "<th>" + resultArray[i] + "</th>";
+        res += "</tr>";
     }
-    res += "</ul>";
+
 
     // clear the old array and show the new array in the frontend
     item_list.html("");
@@ -51,6 +53,8 @@ function handleCartInfo(cartEvent) {
      * event handler when the event is triggered.
      */
     cartEvent.preventDefault();
+    console.log(cart);
+    console.log($(this))
 
     $.ajax("api/cart", {
         method: "POST",
