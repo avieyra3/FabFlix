@@ -46,9 +46,8 @@ public class MovieListServlet extends HttpServlet {
                         "AND movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id\n";
         String queryAmmend = ""; // this is sql string that will include info from search/browse
         String sortBy = " ORDER BY title ASC, rating ASC"; // the default sort setting
-        String pageSize = " LIMIT 10"; // the default page size
-        String offset = ""; // offset will be modded via pagination
-
+        Integer pageSize = 10; // the default page size
+        Integer pageNumber = 0;
         if (requestType == null) {
             ;
         } else if (requestType.equals("search")) {
@@ -76,52 +75,93 @@ public class MovieListServlet extends HttpServlet {
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("MovieList Connection established!\n");
             Statement statement = connection.createStatement();
+            //----------create a session object----------------
+            HttpSession session = request.getSession();
 
-            // if request type is sort, then use the pre-existing sql query
-            if (requestType.equals("sort")) {
-                sortBy = request.getParameter("sort-by");
-                pageSize = request.getParameter("page-size");
+            if (requestType.equals("next")) {
+                // We get the sessions data and reconstruct the query to incorporate the offset (new page)
+                pageNumber = (Integer) session.getAttribute("pageNumber");
+                pageSize = (Integer) session.getAttribute("pageSize");
+
+                // edge case: make sure that the user cannot exceed the max page size.
+                Integer totalResults = (Integer) session.getAttribute("totalResults"); // gets the total results
+                if (totalResults < pageSize) {
+                    ;
+                } else {
+                    pageNumber += 1;
+                }
+                session.setAttribute("pageNumber", pageNumber);
+
+                sortBy = (String) session.getAttribute("sortBy");
+                //calculate offset
+                int offset = pageSize * pageNumber;
 
                 // fetch the previous sql query using session
-                HttpSession session = request.getSession();
-                ArrayList<String> queryHistory = (ArrayList<String>) session.getAttribute("queryHistory");
-                query = queryHistory.get(0);
-                query += " " + sortBy + " " + pageSize;
+                String queryHistory = (String) session.getAttribute("queryHistory");
+                query = queryHistory + sortBy + " LIMIT " + pageSize + " OFFSET " + offset;
+                System.out.println("next query: " + query);
+
+            } else if (requestType.equals("prev")){
+                pageNumber = (Integer) session.getAttribute("pageNumber");
+                // edge case: we cannot have a page less than zero. 
+                pageNumber -= 1;
+                if (pageNumber < 0) {
+                    pageNumber = 0;
+                }
+                session.setAttribute("pageNumber", pageNumber);
+                pageSize = (Integer) session.getAttribute("pageSize");
+                sortBy = (String) session.getAttribute("sortBy");
+                //calculate offset
+                int offset = pageSize * pageNumber;
+
+                // fetch the previous sql query using session
+                String queryHistory = (String) session.getAttribute("queryHistory");
+                query = queryHistory + sortBy + " LIMIT " + pageSize + " OFFSET " + offset;
+                System.out.println("next query: " + query);
+
+            } else if (requestType.equals("sort")) { // if request type is sort, then use the pre-existing sql query
+                sortBy = request.getParameter("sort-by");
+                pageSize = Integer.parseInt(request.getParameter("page-size"));
+                session.setAttribute("pageSize", pageSize);
+                session.setAttribute("sortBy", sortBy);
+                pageNumber = (Integer) session.getAttribute("pageNumber");
+
+                // fetch the previous sql query using session
+                String queryHistory = (String) session.getAttribute("queryHistory");
+                query = queryHistory;
+                query += " " + sortBy + " LIMIT " + pageSize + " OFFSET " + (pageSize*pageNumber);
                 System.out.println("query with sort: " + query);
 
             } else {
-                //----------create a session object----------------
-                // clear previous cached sql session query since we are starting a new request-type=search/browse
-                HttpSession session = request.getSession();
-                ArrayList<String> queryHistory = (ArrayList<String>) session.getAttribute("queryHistory");
-                if (queryHistory == null){
-                    queryHistory = new ArrayList<>();
-                }
-                else {
-                    queryHistory.clear();
-                    session.setAttribute("queryHistory", queryHistory);
-                }
+                // clear previous cached sql session since we are starting a new request-type=search/browse
+                // this means default initializing the variable data
+                String queryHistory = "";
+                sortBy = "ORDER BY title ASC, rating ASC";
+                pageSize = 10;
+                pageNumber = 0;
+                session.setAttribute("queryHistory", queryHistory);
+                session.setAttribute("pageSize", pageSize);
+                session.setAttribute("pageNumber", pageNumber);
+                session.setAttribute("sortBy", sortBy);
                 // add the search/browse portion to the query
                 query += queryAmmend;
-                // Add the sql query to the session queryHistory arrayList
-                queryHistory.add(query);
+                // assign the new sql query to the session queryHistory string
+                queryHistory = query;
                 // set it in the session
                 session.setAttribute("queryHistory", queryHistory);
                 // print out to debug
-                System.out.println("size of arraylist: " + queryHistory.size());
-                for (int i = 0; i < queryHistory.size(); i++){
-                    System.out.println("queryHistory: " + queryHistory.get(i));
-                }
+                System.out.println("queryHistory: " + queryHistory);
 
                 // add default sort and page number 
-                query += sortBy + pageSize;
+                query += sortBy + " LIMIT " + pageSize;
                 System.out.println("default query: " + query);
             }
 
             ResultSet result = statement.executeQuery(query);
             JsonArray jsonArray = new JsonArray();
-
+            Integer totalResults = 0;
             while (result.next()) {
+                totalResults += 1;
                 String movie_id = result.getString("id");
                 String movie_title = result.getString("title");
                 String movie_year = result.getString("year");
@@ -176,10 +216,11 @@ public class MovieListServlet extends HttpServlet {
                 jsonObject.addProperty("movie_genres", movie_genres);
                 jsonObject.addProperty("movie_stars", movie_stars);
                 jsonObject.addProperty("star_id", movie_star_IDs);
-
+                jsonObject.addProperty("pageNumber", (Integer) session.getAttribute("pageNumber"));
+                System.out.println(jsonObject);
                 jsonArray.add(jsonObject);
             }
-
+            session.setAttribute("totalResults", totalResults);
             result.close();
             statement.close();
 

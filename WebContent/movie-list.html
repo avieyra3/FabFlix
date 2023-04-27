@@ -46,10 +46,10 @@
     <form ACTION="movie-list.html" id="sorting" METHOD="GET">
         <input TYPE="hidden" NAME="request-type" VALUE="sort">
         Movies Per Page: <select NAME="page-size">
-        <option VALUE="LIMIT 10">10</option>
-        <option VALUE="LIMIT 25">25</option>
-        <option VALUE="LIMIT 50">50</option>
-        <option VALUE="LIMIT 100">100</option>
+        <option VALUE="10">10</option>
+        <option VALUE="25">25</option>
+        <option VALUE="50">50</option>
+        <option VALUE="100">100</option>
     </select>
         Sort By: <select NAME="sort-by">
         <option VALUE="ORDER BY title ASC, rating ASC">Title↑ Rating↑</option>
@@ -92,7 +92,7 @@
     
     <form ACTION="movie-list.html" id="pagination" METHOD="GET">
         <button TYPE="submit" NAME="request-type" VALUE="prev">< Prev</button>
-        <span ID="page-number"> 1 </span>
+        <span ID="page-number"></span>
         <button TYPE="submit" NAME="request-type" VALUE="next">Next ></button>
     </form>
     
