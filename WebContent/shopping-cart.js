@@ -1,44 +1,34 @@
-let cart = $("#cart");
-
-/**
- * Handle the data returned by IndexServlet
- * @param resultDataString jsonObject, consists of session info
- */
-function handleSessionData(resultDataString) {
-    let resultDataJson = JSON.parse(resultDataString);
-
-    console.log("handle session response");
-    console.log(resultDataJson);
-    console.log(resultDataJson["sessionID"]);
-
-    // show the session information
-    $("#sessionID").text("Session ID: " + resultDataJson["sessionID"]);
-    $("#lastAccessTime").text("Last access time: " + resultDataJson["lastAccessTime"]);
-
-    // show cart information
-    handleCartArray(resultDataJson["previousItems"]);
-}
 
 /**
  * Handle the items in item list
- * @param resultArray jsonObject, needs to be parsed to html
+ * @param resultData jsonObject, needs to be parsed to html
  */
-function handleCartArray(resultArray) {
-    console.log(resultArray);
-    let item_list = $("#item_list");
+function handleCartArray(resultData) {
+    console.log(resultData);
+    let item_table = $("#item_table");
     // change it to html list
     let res = "";
-    for (let i = 0; i < resultArray.length; i++) {
+    for (let i = 0; i < resultData.length; i++) {
         // each item will be in a bullet point
         res += "<tr>";
-        res += "<th>" + resultArray[i] + "</th>";
+        res += "<th>" + resultData[i]['movie_title'] + "</th>";
+        res += "<th>" + "<form ACTION='#' id='quantity' METHOD='GET'>\n" +
+            "    <input TYPE='submit' NAME='quantity' VALUE='-'>\n" +
+            "    <span ID='page-number'> " + resultData[i]['movie_count'] + " </span>\n" +
+            "    <input TYPE='submit' NAME='quantity' VALUE='+'>\n" +
+            "</form>" + "</th>";
+        res += "<th>" + "<form ACTION='#' id='quantity' METHOD='GET'>\n" +
+            "    <input TYPE='submit' NAME='quantity' VALUE='Delete'>\n" +
+            "</form>" + "</th>";
+        res += "<th>" + "$" + "</th>";
+        res += "<th>" + "$" + "</th>";
         res += "</tr>";
     }
 
-
+    
     // clear the old array and show the new array in the frontend
-    item_list.html("");
-    item_list.append(res);
+    item_table.html("");
+    item_table.append(res);
 }
 
 /**
@@ -69,10 +59,8 @@ function handleCartInfo(cartEvent) {
     cart[0].reset();
 }
 
-$.ajax("api/index", {
+$.ajax("api/cart", {
     method: "GET",
-    success: handleSessionData
+    success: handleCartArray
 });
 
-// Bind the submit action of the form to a event handler function
-cart.submit(handleCartInfo);
