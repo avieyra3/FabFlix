@@ -32,6 +32,8 @@ function handleCartArray(resultData) {
         res += "<form ACTION='purchase-info.html'>\n" +
             "    <input TYPE='submit' VALUE='Proceed to Payment'>\n" +
             "</form>";
+    } else {
+        res += "<p>Your cart is empty.</p>"
     }
     item_total.html("");
     item_total.append(res);
@@ -39,14 +41,47 @@ function handleCartArray(resultData) {
 
 function movieDecrement(id) {
     console.log("Decrementing " + id);
+    $.ajax("api/cart", {
+        method: "POST",
+        data: "id=" + id + "&action=decrement",
+        success: function () {
+            console.log("movieDecrement SUCCESS");
+            $.ajax("api/cart", {
+                method: "GET",
+                success: handleCartArray
+            });
+        }
+    });
 }
 
 function movieIncrement(id) {
     console.log("Incrementing " + id);
+    $.ajax("api/cart", {
+        method: "POST",
+        data: "id=" + id + "&action=increment",
+        success: function () {
+            console.log("movieIncrement SUCCESS");
+            $.ajax("api/cart", {
+                method: "GET",
+                success: handleCartArray
+            });
+        }
+    });
 }
 
 function movieDelete(id) {
     console.log("Deleting " + id);
+    $.ajax("api/cart", {
+        method: "POST",
+        data: "id=" + id + "&action=delete",
+        success: function () {
+            console.log("movieDelete SUCCESS");
+            $.ajax("api/cart", {
+                method: "GET",
+                success: handleCartArray
+            });
+        }
+    });
 }
 
 /**

@@ -38,6 +38,7 @@ public class ShoppingCartServlet extends HttpServlet {
             e.printStackTrace();
         }
     }
+
     /**
      * handles GET requests to store session information
      */
@@ -58,14 +59,19 @@ public class ShoppingCartServlet extends HttpServlet {
         // Convert previousItems from Java ArrayList to SQL list. Calculate the total price
         Integer totalPrice = 0;
         String sqlCartList = "(";
-        if (previousItems.size() > 0) {
-            for (String key : previousItems.keySet()) {
-                sqlCartList += "'" + key + "', ";
-                totalPrice += previousItems.get(key) * previousPrices.get(key);
+        synchronized (totalPrice) {
+            if (previousItems.size() > 0) {
+                for (String key : previousItems.keySet()) {
+                    sqlCartList += "'" + key + "', ";
+                    totalPrice += previousItems.get(key) * previousPrices.get(key);
+                }
+                sqlCartList = sqlCartList.substring(0, sqlCartList.length() - 2);
+            } else {
+                sqlCartList += "'EMPTY_LIST'";
             }
-            sqlCartList = sqlCartList.substring(0, sqlCartList.length() - 2);
+            sqlCartList += ")";
         }
-        sqlCartList += ")";
+
         // Log to localhost log
         request.getServletContext().log("getting " + previousItems.size() + " items");
         session.setAttribute("totalCartPrice", totalPrice);
@@ -119,7 +125,7 @@ public class ShoppingCartServlet extends HttpServlet {
         }
 
         // write all the data into the jsonObject
-
+        System.out.println("ShoppingCartServlet doGet Done!");
     }
 
     /**
@@ -127,49 +133,73 @@ public class ShoppingCartServlet extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         System.out.println("ShoppingCartServlet doPost Executing!");
-        String item = request.getParameter("item");
-        System.out.println(item);
-        HttpSession session = request.getSession();
+        if (request.getParameter("id") != null) {
+            HttpSession session = request.getSession();
+            HashMap<String, Integer> previousItems = (HashMap<String, Integer>) session.getAttribute("previousItems");
+            String item = request.getParameter("id");
+            String action = request.getParameter("action");
+            System.out.println(item + " " + action);
 
-        // get the previous items in a ArrayList
-        HashMap<String, Integer> previousItems = (HashMap<String, Integer>) session.getAttribute("previousItems");
-        if (previousItems == null) {
-            previousItems = new HashMap<String, Integer>();
-            previousItems.put(item, 1);
-            session.setAttribute("previousItems", previousItems);
-        } else {
-            // prevent corrupted states through sharing under multi-threads
-            // will only be executed by one thread at a time
-            synchronized (previousItems) {
-                if (previousItems.containsKey(item)) {
+            if (action.equals("decrement")) {
+                if (previousItems.get(item) > 0) {
+                    synchronized (previousItems) {
+                        previousItems.put(item, previousItems.get(item) - 1);
+                    }
+                }
+            } else if (action.equals("increment")) {
+                synchronized (previousItems) {
                     previousItems.put(item, previousItems.get(item) + 1);
-                } else {
-                    previousItems.put(item, 1);
+                }
+            } else if (action.equals("delete")) {
+                synchronized (previousItems) {
+                    previousItems.remove(item);
                 }
             }
         }
+        else if (request.getParameter("item") != null) {
+            String item = request.getParameter("item");
+            System.out.println(item);
+            HttpSession session = request.getSession();
 
-        HashMap<String, Integer> previousPrices = (HashMap<String, Integer>) session.getAttribute("previousPrices");
-        if (previousPrices == null) {
-            previousPrices = new HashMap<String, Integer>();
-            previousPrices.put(item, ThreadLocalRandom.current().nextInt(10, 100));
-            session.setAttribute("previousPrices", previousPrices);
-        } else {
-            synchronized (previousPrices) {
-                if (!previousPrices.containsKey(item)) {
-                    previousPrices.put(item, ThreadLocalRandom.current().nextInt(10, 100));
+            // get the previous items in a ArrayList
+            HashMap<String, Integer> previousItems = (HashMap<String, Integer>) session.getAttribute("previousItems");
+            if (previousItems == null) {
+                previousItems = new HashMap<String, Integer>();
+                previousItems.put(item, 1);
+                session.setAttribute("previousItems", previousItems);
+            } else {
+                // prevent corrupted states through sharing under multi-threads
+                // will only be executed by one thread at a time
+                synchronized (previousItems) {
+                    if (previousItems.containsKey(item)) {
+                        previousItems.put(item, previousItems.get(item) + 1);
+                    } else {
+                        previousItems.put(item, 1);
+                    }
                 }
             }
-        }
 
-        Integer totalPrice = (Integer) session.getAttribute("totalCartPrice");
-        if (totalPrice == null) {
-            session.setAttribute("totalCartPrice", previousPrices.get(item));
-        } else {
-            synchronized (totalPrice) {
-                session.setAttribute("totalCartPrice", totalPrice + previousPrices.get(item));
+            HashMap<String, Integer> previousPrices = (HashMap<String, Integer>) session.getAttribute("previousPrices");
+            if (previousPrices == null) {
+                previousPrices = new HashMap<String, Integer>();
+                previousPrices.put(item, ThreadLocalRandom.current().nextInt(10, 100));
+                session.setAttribute("previousPrices", previousPrices);
+            } else {
+                synchronized (previousPrices) {
+                    if (!previousPrices.containsKey(item)) {
+                        previousPrices.put(item, ThreadLocalRandom.current().nextInt(10, 100));
+                    }
+                }
             }
-        }
+
+            Integer totalPrice = (Integer) session.getAttribute("totalCartPrice");
+            if (totalPrice == null) {
+                session.setAttribute("totalCartPrice", previousPrices.get(item));
+            } else {
+                synchronized (totalPrice) {
+                    session.setAttribute("totalCartPrice", totalPrice + previousPrices.get(item));
+                }
+            }
 
 //        JsonObject responseJsonObject = new JsonObject();
 //
@@ -178,5 +208,9 @@ public class ShoppingCartServlet extends HttpServlet {
 //        responseJsonObject.add("previousItems", previousItemsJsonArray);
 //
 //        response.getWriter().write(responseJsonObject.toString());
+        }
+        System.out.println("ShoppingCartServlet doPost Done!");
+
     }
+
 }
