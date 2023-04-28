@@ -70,11 +70,17 @@ function handleMovieResult(resultData) {
         rowHTML += '<a href="single-star.html?id=' + starsIdArray[j] + '">' + starsArray[j] + '</a>' + "</th>";
 
         rowHTML += "<th>" + resultData[i]["movie_rating"] + "</th>";
-        rowHTML += "<th><form ACTION='api/cart' id='add-to-cart' METHOD='POST'><button TYPE='submit' NAME='item' VALUE='" + resultData[i]['movie_id'] + "'>Add</button></form></th>";
+        rowHTML += "<th><form ACTION='#' id='cart" + i + "' METHOD='POST'>" +
+                     "<input TYPE='hidden' NAME='item' VALUE='" + resultData[i]['movie_id'] + "'>" +
+                     "<input TYPE='submit' VALUE='Add'>" +
+                     "</form></th>";
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
         movieTableBodyElement.append(rowHTML);
+        let cart = $("#cart" + i);
+        console.log(cart);
+        cart.submit(handleCartInfo);
     }
 
     let pageElement = jQuery("#page-number");
@@ -96,3 +102,26 @@ jQuery.ajax({
     url: "api/movielist?" + parameters, // Setting request url, which is mapped by MovieListServlet in MovieListServlet.java
     success: (resultData) => handleMovieResult(resultData) // Setting callback function to handle data returned successfully by the MovieListServlet
 });
+
+function handleCartInfo(cartEvent) {
+    console.log("submit cart form");
+    /**
+     * When users click the submit button, the browser will not direct
+     * users to the url defined in HTML form. Instead, it will call this
+     * event handler when the event is triggered.
+     */
+         cartEvent.preventDefault();
+
+        $.ajax("api/cart", {
+            method: "POST",
+            data: $(this).serialize(),
+            success: function () {
+                console.log("Movie Successfully Added!");
+                alert("Movie Successfully Added!");
+            },
+            error: function () {
+                console.log("Failed To Add Movie");
+                alert("Failed To Add Movie");
+            }
+     });
+}

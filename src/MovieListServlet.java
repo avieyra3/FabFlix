@@ -181,6 +181,7 @@ public class MovieListServlet extends HttpServlet {
                 while (resultGenres.next()) {
                     movie_genres += resultGenres.getString("name") + ", ";
                 }
+                movie_genres = movie_genres.substring(0, movie_genres.length() - 2);
 
                 Statement statementStars = connection.createStatement();
                 String queryStars = "SELECT stars.name\n" +
@@ -192,6 +193,7 @@ public class MovieListServlet extends HttpServlet {
                 while (resultStars.next()) {
                     movie_stars += resultStars.getString("name") + ", ";
                 }
+                movie_stars = movie_stars.substring(0, movie_stars.length() - 2);
 
                 Statement statementStarIDs = connection.createStatement();
                 String queryStarIDs = "SELECT stars.id\n" +
@@ -203,6 +205,7 @@ public class MovieListServlet extends HttpServlet {
                 while (resultStarIDs.next()) {
                     movie_star_IDs += resultStarIDs.getString("id") + ", ";
                 }
+                movie_star_IDs = movie_star_IDs.substring(0, movie_star_IDs.length() - 2);
 
                 System.out.println(movie_id + " " + movie_title + " " + movie_year + " " + movie_director
                         + " " + movie_rating + " " + movie_genres + " " + movie_stars);
