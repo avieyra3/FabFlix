@@ -18,6 +18,7 @@ import javax.sql.DataSource;
 import java.sql.*;
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
@@ -49,17 +50,25 @@ public class ShoppingCartServlet extends HttpServlet {
         if (previousItems == null) {
             previousItems = new HashMap<String, Integer>();
         }
-        // Convert previousItems from Java ArrayList to SQL list
+        HashMap<String, Integer> previousPrices = (HashMap<String, Integer>) session.getAttribute("previousPrices");
+        if (previousPrices == null) {
+            previousPrices = new HashMap<String, Integer>();
+        }
+
+        // Convert previousItems from Java ArrayList to SQL list. Calculate the total price
+        Integer totalPrice = 0;
         String sqlCartList = "(";
         if (previousItems.size() > 0) {
             for (String key : previousItems.keySet()) {
                 sqlCartList += "'" + key + "', ";
+                totalPrice += previousItems.get(key) * previousPrices.get(key);
             }
             sqlCartList = sqlCartList.substring(0, sqlCartList.length() - 2);
         }
         sqlCartList += ")";
         // Log to localhost log
         request.getServletContext().log("getting " + previousItems.size() + " items");
+        session.setAttribute("totalCartPrice", totalPrice);
 
         PrintWriter out = response.getWriter();
 
@@ -78,6 +87,7 @@ public class ShoppingCartServlet extends HttpServlet {
                 String movie_id = result.getString("id");
                 String movie_title = result.getString("title");
                 Integer movie_count = previousItems.get(movie_id);
+                Integer movie_price = previousPrices.get(movie_id);
 
                 System.out.println(movie_id + " " + movie_title);
 
@@ -85,6 +95,8 @@ public class ShoppingCartServlet extends HttpServlet {
                 jsonObject.addProperty("movie_id", movie_id);
                 jsonObject.addProperty("movie_title", movie_title);
                 jsonObject.addProperty("movie_count", movie_count);
+                jsonObject.addProperty("movie_price", movie_price);
+                jsonObject.addProperty("total_price", totalPrice);
 
                 jsonArray.add(jsonObject);
             }
@@ -134,6 +146,28 @@ public class ShoppingCartServlet extends HttpServlet {
                 } else {
                     previousItems.put(item, 1);
                 }
+            }
+        }
+
+        HashMap<String, Integer> previousPrices = (HashMap<String, Integer>) session.getAttribute("previousPrices");
+        if (previousPrices == null) {
+            previousPrices = new HashMap<String, Integer>();
+            previousPrices.put(item, ThreadLocalRandom.current().nextInt(10, 100));
+            session.setAttribute("previousPrices", previousPrices);
+        } else {
+            synchronized (previousPrices) {
+                if (!previousPrices.containsKey(item)) {
+                    previousPrices.put(item, ThreadLocalRandom.current().nextInt(10, 100));
+                }
+            }
+        }
+
+        Integer totalPrice = (Integer) session.getAttribute("totalCartPrice");
+        if (totalPrice == null) {
+            session.setAttribute("totalCartPrice", previousPrices.get(item));
+        } else {
+            synchronized (totalPrice) {
+                session.setAttribute("totalCartPrice", totalPrice + previousPrices.get(item));
             }
         }
 
