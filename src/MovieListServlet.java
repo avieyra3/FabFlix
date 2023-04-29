@@ -37,6 +37,8 @@ public class MovieListServlet extends HttpServlet {
         System.out.println("request query: " + request.getQueryString());
         String requestType = request.getParameter("request-type");
         System.out.println("request type: " + requestType);
+        //----------create a session object----------------
+        HttpSession session = request.getSession();
 
         // These strings are the default/preliminary value before modification
         // this is the data sql query string that will be modified according to search/browse and sort.
@@ -75,8 +77,6 @@ public class MovieListServlet extends HttpServlet {
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("MovieList Connection established!\n");
             Statement statement = connection.createStatement();
-            //----------create a session object----------------
-            HttpSession session = request.getSession();
 
             if (requestType.equals("next")) {
                 // We get the sessions data and reconstruct the query to incorporate the offset (new page)
@@ -101,7 +101,7 @@ public class MovieListServlet extends HttpServlet {
                 query = queryHistory + sortBy + " LIMIT " + pageSize + " OFFSET " + offset;
                 System.out.println("next query: " + query);
 
-            } else if (requestType.equals("prev")){
+            } else if (requestType.equals("prev")) {
                 pageNumber = (Integer) session.getAttribute("pageNumber");
                 // edge case: we cannot have a page less than zero. 
                 pageNumber -= 1;
@@ -129,10 +129,19 @@ public class MovieListServlet extends HttpServlet {
                 // fetch the previous sql query using session
                 String queryHistory = (String) session.getAttribute("queryHistory");
                 query = queryHistory;
-                query += " " + sortBy + " LIMIT " + pageSize + " OFFSET " + (pageSize*pageNumber);
+                query += " " + sortBy + " LIMIT " + pageSize + " OFFSET " + (pageSize * pageNumber);
                 System.out.println("query with sort: " + query);
 
-            } else {
+            } else if (requestType.split("=")[0].equals("restore")) {
+
+                String restoreQuery = (String) session.getAttribute("restored-query");
+                // check if the user somehow went straight to a single movie page, if so, this
+                // safety net will still load a list of movies although this technically shouldn't
+                // happen.
+                if (restoreQuery != null && restoreQuery !="") {
+                    query = restoreQuery;
+                }
+            }else {
                 // clear previous cached sql session since we are starting a new request-type=search/browse
                 // this means default initializing the variable data
                 String queryHistory = "";
@@ -156,7 +165,10 @@ public class MovieListServlet extends HttpServlet {
                 query += sortBy + " LIMIT " + pageSize;
                 System.out.println("default query: " + query);
             }
-
+            // save query in case user directs to single move/star page
+            session.setAttribute("restored-query", query);
+            
+            // returns the executed query
             ResultSet result = statement.executeQuery(query);
             JsonArray jsonArray = new JsonArray();
             Integer totalResults = 0;
