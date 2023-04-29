@@ -14,8 +14,12 @@ $.ajax("api/payment", {
 function handleAuthRequest(authData) {
     if (authData[0]['authorized'] == "true") {
         console.log("Correct payment info");
+        console.log(authData);
+        window.location.href = 'purchase-confirm.html';
+
     } else if (authData[0]['authorized'] == "false") {
         console.log("Wrong payment info");
+        $("#payment-error").append("<p>Credit card information not found</p>");
     }
 }
 function handlePaymentInfo(formEvent) {

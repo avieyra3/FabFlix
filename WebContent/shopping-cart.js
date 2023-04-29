@@ -28,7 +28,7 @@ function handleCartArray(resultData) {
     let item_total = $("#item_total");
     res = "";
     if (resultData.length > 0) {
-        res += "<p>Total Price: $" + resultData[0]['total_price'] + "</p><br>";
+        res += "<p>Total Price: $" + resultData[0]['total_cart_price'] + "</p><br>";
         res += "<form ACTION='purchase-info.html'>\n" +
             "    <input TYPE='submit' VALUE='Proceed to Payment'>\n" +
             "</form>";

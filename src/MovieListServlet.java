@@ -222,6 +222,13 @@ public class MovieListServlet extends HttpServlet {
                 jsonObject.addProperty("pageNumber", (Integer) session.getAttribute("pageNumber"));
                 System.out.println(jsonObject);
                 jsonArray.add(jsonObject);
+
+                resultGenres.close();
+                resultStars.close();
+                resultStarIDs.close();
+                statementGenres.close();
+                statementStars.close();
+                statementStarIDs.close();
             }
             session.setAttribute("totalResults", totalResults);
             result.close();

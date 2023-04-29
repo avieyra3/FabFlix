@@ -41,7 +41,7 @@ public class ShoppingCartServlet extends HttpServlet {
      * handles GET requests to store session information
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("ShoppingCartServlet doGet Executing!");
+        System.out.println("\n-------ShoppingCartServlet doGet Executing!");
         response.setContentType("application/json");
         HttpSession session = request.getSession();
 
@@ -55,13 +55,13 @@ public class ShoppingCartServlet extends HttpServlet {
         }
 
         // Convert previousItems from Java ArrayList to SQL list. Calculate the total price
-        Integer totalPrice = 0;
+        Integer totalCartPrice = 0;
         String sqlCartList = "(";
-        synchronized (totalPrice) {
+        synchronized (totalCartPrice) {
             if (previousItems.size() > 0) {
                 for (String key : previousItems.keySet()) {
                     sqlCartList += "'" + key + "', ";
-                    totalPrice += previousItems.get(key) * previousPrices.get(key);
+                    totalCartPrice += previousItems.get(key) * previousPrices.get(key);
                 }
                 sqlCartList = sqlCartList.substring(0, sqlCartList.length() - 2);
             } else {
@@ -72,7 +72,7 @@ public class ShoppingCartServlet extends HttpServlet {
 
         // Log to localhost log
         request.getServletContext().log("getting " + previousItems.size() + " items");
-        session.setAttribute("totalCartPrice", totalPrice);
+        session.setAttribute("totalCartPrice", totalCartPrice);
 
         PrintWriter out = response.getWriter();
 
@@ -100,7 +100,7 @@ public class ShoppingCartServlet extends HttpServlet {
                 jsonObject.addProperty("movie_title", movie_title);
                 jsonObject.addProperty("movie_count", movie_count);
                 jsonObject.addProperty("movie_price", movie_price);
-                jsonObject.addProperty("total_price", totalPrice);
+                jsonObject.addProperty("total_cart_price", totalCartPrice);
 
                 jsonArray.add(jsonObject);
             }
@@ -123,14 +123,14 @@ public class ShoppingCartServlet extends HttpServlet {
         }
 
         // write all the data into the jsonObject
-        System.out.println("ShoppingCartServlet doGet Done!");
+        System.out.println("-------ShoppingCartServlet doGet Done!\n");
     }
 
     /**
      * handles POST requests to add and show the item list information
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("ShoppingCartServlet doPost Executing!");
+        System.out.println("\n-------ShoppingCartServlet doPost Executing!");
         if (request.getParameter("id") != null) {
             HttpSession session = request.getSession();
             HashMap<String, Integer> previousItems = (HashMap<String, Integer>) session.getAttribute("previousItems");
@@ -139,7 +139,7 @@ public class ShoppingCartServlet extends HttpServlet {
             System.out.println(item + " " + action);
 
             if (action.equals("decrement")) {
-                if (previousItems.get(item) > 0) {
+                if (previousItems.get(item) > 1) {
                     synchronized (previousItems) {
                         previousItems.put(item, previousItems.get(item) - 1);
                     }
@@ -190,12 +190,12 @@ public class ShoppingCartServlet extends HttpServlet {
                 }
             }
 
-            Integer totalPrice = (Integer) session.getAttribute("totalCartPrice");
-            if (totalPrice == null) {
+            Integer totalCartPrice = (Integer) session.getAttribute("totalCartPrice");
+            if (totalCartPrice == null) {
                 session.setAttribute("totalCartPrice", previousPrices.get(item));
             } else {
-                synchronized (totalPrice) {
-                    session.setAttribute("totalCartPrice", totalPrice + previousPrices.get(item));
+                synchronized (totalCartPrice) {
+                    session.setAttribute("totalCartPrice", totalCartPrice + previousPrices.get(item));
                 }
             }
 
@@ -207,7 +207,7 @@ public class ShoppingCartServlet extends HttpServlet {
 //
 //        response.getWriter().write(responseJsonObject.toString());
         }
-        System.out.println("ShoppingCartServlet doPost Done!");
+        System.out.println("-------ShoppingCartServlet doPost Done!\n");
 
     }
 
