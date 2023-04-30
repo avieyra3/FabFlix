@@ -1,0 +1,43 @@
+* {
+    font-family: 'Playfair Display', Serif;
+}
+
+/* sets the height of the header and color*/
+header {
+    background-color: darkslategray;
+    color: white;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    padding: 20px;
+}
+
+.logo-header{
+    color: white;
+    font-weight: bold;
+    font-size: xxx-large;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* footer at the bottom to display socials */
+footer {
+    background-color: darkslategray;
+    padding: 20px;
+    margin-top: auto;
+    height: 60px;
+    display: flex;
+    color: white;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.footer-head {
+    margin-right: 10px; /* create space between footer-head and the buttons*/
+}
