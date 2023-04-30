@@ -47,22 +47,24 @@ public class LoginServlet extends HttpServlet {
                     " AND password = " + '"' + password + '"';
             System.out.println(query);
             ResultSet result = statement.executeQuery(query);
-            System.out.println("email: " + result.getString("email") + " ");
-            JsonObject responseJsonObject = new JsonObject();
-            if (username.equals(result.getString("email")) && password.equals(result.getString("password"))) {
-                // Login success:
-                // set this user into the session
-                request.getSession().setAttribute("user", new User(username));
-                responseJsonObject.addProperty("status", "success");
-                responseJsonObject.addProperty("message", "success");
 
-            } else {
+            JsonObject responseJsonObject = new JsonObject();
+            if (!result.next() || !username.equals(result.getString("email")) ||
+                    !password.equals(result.getString("password"))) {
                 // Login fail
                 responseJsonObject.addProperty("status", "fail");
                 // Log to localhost log
                 request.getServletContext().log("Login failed");
                 // sample error messages. in practice, it is not a good idea to tell user which one is incorrect/not exist.
                 responseJsonObject.addProperty("message", "username/password is incorrect.");
+
+            } else {
+                // Login success:
+                // set this user into the session
+                request.getSession().setAttribute("user", new User(username));
+                responseJsonObject.addProperty("status", "success");
+                responseJsonObject.addProperty("message", "success");
+
             }
             response.getWriter().write(responseJsonObject.toString());
 
