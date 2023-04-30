@@ -50,6 +50,7 @@ public class MovieListServlet extends HttpServlet {
         String sortBy = " ORDER BY title ASC, rating ASC"; // the default sort setting
         Integer pageSize = 10; // the default page size
         Integer pageNumber = 0;
+        System.out.println("query: " + query);
         if (requestType == null) {
             ;
         } else if (requestType.equals("search")) {
@@ -67,6 +68,7 @@ public class MovieListServlet extends HttpServlet {
         } else if (requestType.split("=")[0].equals("genre")) {
             String genre = requestType.split("=")[1];
             queryAmmend = "AND genres.name = " + "'" + genre + "'";
+            System.out.println("query: " + query + queryAmmend);
         } else if (requestType.split("=")[0].equals("prefix")) {
             String prefix = requestType.split("=")[1];
             if (prefix.equals("*")) {
@@ -74,9 +76,9 @@ public class MovieListServlet extends HttpServlet {
             } else {
                 queryAmmend = "AND title LIKE '" + prefix + "%'";
             }
-
+        }
             PrintWriter out = response.getWriter();
-
+            System.out.println("query: " + query);
             try (Connection connection = dataSource.getConnection()) {
                 System.out.println("MovieList Connection established!\n");
                 Statement statement = connection.createStatement();
@@ -170,7 +172,7 @@ public class MovieListServlet extends HttpServlet {
                 }
                 // save query in case user directs to single move/star page
                 session.setAttribute("restored-query", query);
-
+                System.out.println("testing query: " + query);
                 // returns the executed query
                 ResultSet result = statement.executeQuery(query);
                 JsonArray jsonArray = new JsonArray();
@@ -263,6 +265,5 @@ public class MovieListServlet extends HttpServlet {
             } finally {
                 out.close();
             }
-        }
     }
 }
