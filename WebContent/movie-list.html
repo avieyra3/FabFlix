@@ -32,16 +32,23 @@
             </ul>
         </nav>
         <h1 class="list-header">Movie List</h1>
+
         <div class="container-sort">
         <form class="sort-container" ACTION="movie-list.html" id="sorting" METHOD="GET">
             <input TYPE="hidden" NAME="request-type" VALUE="sort">
-            Movies Per Page: <select NAME="page-size">
-            <option VALUE="10">10</option>
-            <option VALUE="25">25</option>
-            <option VALUE="50">50</option>
-            <option VALUE="100">100</option>
-        </select>
-            Sort By: <select NAME="sort-by">
+            <div class="moviespp">
+                Movies Per Page:
+            </div>
+                <select class="pagesize-select" NAME="page-size">
+                <option VALUE="10">10</option>
+                <option VALUE="25">25</option>
+                <option VALUE="50">50</option>
+                <option VALUE="100">100</option>
+                </select>
+            <div class="order-by">
+                Sort By:
+            </div>
+        <select class="sort-select" NAME="sort-by">
             <option VALUE="ORDER BY title ASC, rating ASC">Title↑ Rating↑</option>
             <option VALUE="ORDER BY title ASC, rating DESC">Title↑ Rating↓</option>
             <option VALUE="ORDER BY title DESC, rating ASC">Title↓ Rating↑</option>
@@ -51,21 +58,22 @@
             <option VALUE="ORDER BY rating DESC, title ASC">Rating↓ Title↑</option>
             <option VALUE="ORDER BY rating DESC, title DESC">Rating↓ Title↓</option>
         </select>
-            <input TYPE="submit" VALUE="Sort">
+            <input class="sort-submit" TYPE="submit" VALUE="Sort">
         </form>
         </div>
     </header>
-    
-    <form ACTION="movie-list.html" id="search-bar" METHOD="GET">
-        <input TYPE="hidden" NAME="request-type" VALUE="search">
-        Title: <input TYPE="text" NAME="title">
-        Year: <input TYPE="number" NAME="year">
-        Director: <input TYPE="text" NAME="director">
-        Star's Name: <input TYPE="text" NAME="star">
 
-        <input TYPE="submit" VALUE="Search">
-    </form>
+    <div class="search-form">
+        <form ACTION="movie-list.html" id="search-bar" METHOD="GET">
+            <input TYPE="hidden" NAME="request-type" VALUE="search">
+            Title: <input TYPE="text" NAME="title">
+            Year: <input TYPE="number" NAME="year">
+            Director: <input TYPE="text" NAME="director">
+            Star's Name: <input TYPE="text" NAME="star">
 
+            <input TYPE="submit" VALUE="Search">
+        </form>
+    </div>
     <!-- Id "movie" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
     <div class="center-container">
         <table id=movie_table class="table table-hover">
@@ -91,7 +99,7 @@
     <div class="page-buttons">
         <form ACTION="movie-list.html" id="pagination" METHOD="GET">
             <button class="prev" TYPE="submit" NAME="request-type" VALUE="prev">&laquo; Prev</button>
-            <span ID="page-number"></span>
+            <span ID="page-number">1</span>
             <button class="next" TYPE="submit" NAME="request-type" VALUE="next">Next &raquo;</button>
         </form>
     </div>
