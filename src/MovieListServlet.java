@@ -188,7 +188,7 @@ public class MovieListServlet extends HttpServlet {
                         "FROM movies JOIN genres_in_movies JOIN genres\n" +
                         "WHERE movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id " +
                         "AND movies.id = '" + movie_id + "'\n" +
-                        "LIMIT 3;";
+                        "ORDER BY genres.name LIMIT 3;";
                 ResultSet resultGenres = statementGenres.executeQuery(queryGenres);
                 while (resultGenres.next()) {
                     movie_genres += resultGenres.getString("name") + ", ";
@@ -196,27 +196,18 @@ public class MovieListServlet extends HttpServlet {
                 movie_genres = movie_genres.substring(0, movie_genres.length() - 2);
 
                 Statement statementStars = connection.createStatement();
-                String queryStars = "SELECT stars.name\n" +
-                        "FROM movies JOIN stars_in_movies JOIN stars\n" +
-                        "WHERE movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id " +
-                        "AND movies.id = '" + movie_id + "'\n" +
-                        "LIMIT 3;";
+                String queryStars = "SELECT stars.name, stars.id, count(*) as movie_counts\n" +
+                        "FROM movies JOIN stars_in_movies JOIN stars JOIN stars_in_movies as sm2 JOIN movies as m2\n" +
+                        "WHERE movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id AND movies.id = '"
+                        + movie_id + "' AND stars.id = sm2.starId AND sm2.moviesId = m2.id\n" +
+                        "GROUP BY stars.id\n" +
+                        "ORDER BY movie_counts DESC, stars.name ASC LIMIT 3";
                 ResultSet resultStars = statementStars.executeQuery(queryStars);
                 while (resultStars.next()) {
                     movie_stars += resultStars.getString("name") + ", ";
+                    movie_star_IDs += resultStars.getString("id") + ", ";
                 }
                 movie_stars = movie_stars.substring(0, movie_stars.length() - 2);
-
-                Statement statementStarIDs = connection.createStatement();
-                String queryStarIDs = "SELECT stars.id\n" +
-                        "FROM movies JOIN stars_in_movies JOIN stars\n" +
-                        "WHERE movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id " +
-                        "AND movies.id = '" + movie_id + "'\n" +
-                        "LIMIT 3;";
-                ResultSet resultStarIDs = statementStarIDs.executeQuery(queryStarIDs);
-                while (resultStarIDs.next()) {
-                    movie_star_IDs += resultStarIDs.getString("id") + ", ";
-                }
                 movie_star_IDs = movie_star_IDs.substring(0, movie_star_IDs.length() - 2);
 
                 System.out.println(movie_id + " " + movie_title + " " + movie_year + " " + movie_director
@@ -237,10 +228,8 @@ public class MovieListServlet extends HttpServlet {
 
                 resultGenres.close();
                 resultStars.close();
-                resultStarIDs.close();
                 statementGenres.close();
                 statementStars.close();
-                statementStarIDs.close();
             }
             session.setAttribute("totalResults", totalResults);
             result.close();
