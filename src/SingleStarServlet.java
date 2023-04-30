@@ -60,7 +60,7 @@ public class SingleStarServlet extends HttpServlet {
                     "GROUP_CONCAT(DISTINCT movies.id ORDER BY year DESC, movies.title SEPARATOR '|') AS movie_ids\n" +
                     "FROM stars JOIN stars_in_movies JOIN movies\n" +
                     "WHERE stars.id = stars_in_movies.starId AND stars_in_movies.moviesId = movies.id AND stars.id = ?;";
-
+            System.out.println(query);
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
 

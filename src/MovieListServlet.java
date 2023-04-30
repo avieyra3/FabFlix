@@ -42,11 +42,12 @@ public class MovieListServlet extends HttpServlet {
 
         // These strings are the default/preliminary value before modification
         // this is the data sql query string that will be modified according to search/browse and sort.
-        String query = "SELECT DISTINCT movies.id, movies.title, movies.year, movies.director, rating\n" +
-                        "FROM movies JOIN ratings JOIN stars_in_movies JOIN stars JOIN genres_in_movies JOIN genres\n" +
-                        "WHERE movies.id = ratings.movieId AND movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id \n" +
-                        "AND movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id\n";
-        String queryAmmend = ""; // this is sql string that will include info from search/browse
+        String query = "";
+        String querySelectClause = "SELECT DISTINCT movies.id, movies.title, movies.year, movies.director, rating\n";
+        String queryFromClause = "FROM movies JOIN ratings\n";
+        String queryWhereClause = "WHERE movies.id = ratings.movieId\n";
+        String queryAmendJoins = ""; // this is sql string that will include info from search/browse
+        String queryAmendConditions = ""; // this is sql string that will include info from search/browse
         String sortBy = " ORDER BY title ASC, rating ASC"; // the default sort setting
         Integer pageSize = 10; // the default page size
         Integer pageNumber = 0;
@@ -60,16 +61,26 @@ public class MovieListServlet extends HttpServlet {
 
             System.out.println(title + " " + year + " " + director + " " + star);
 
-            queryAmmend = " AND title LIKE '%" + title + "%' AND director LIKE '%" + director + "%' AND stars.name LIKE '%" + star + "%'";
-            if (year != "") {
-                queryAmmend = queryAmmend + " AND year = '" + year + "' ";
-            }
+            queryAmendJoins = "JOIN stars_in_movies JOIN stars\n";
+            queryAmendConditions = "AND movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id\n";
+            if (title != "")
+                queryAmendConditions += "AND title LIKE '%" + title + "%' ";
+            if (director != "")
+                queryAmendConditions += "AND director LIKE '%" + director + "%' ";
+            if (star != "")
+                queryAmendConditions += "AND stars.name LIKE '%" + star + "%' ";
+            if (year != "")
+                queryAmendConditions += "AND year = '" + year + "' ";
+            queryAmendConditions += "\n";
         } else if (requestType.split("=")[0].equals("genre")) {
             String genre = requestType.split("=")[1];
-            queryAmmend = "AND genres.name = " + "'" + genre + "'";
+
+            queryAmendJoins = "JOIN genres_in_movies JOIN genres\n";
+            queryAmendConditions = "AND movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id\n" +
+                                    "AND genres.name = " + "'" + genre + "'\n";
         } else if (requestType.split("=")[0].equals("prefix")) {
             String prefix = requestType.split("=")[1];
-            queryAmmend = "AND title LIKE '" + prefix + "%'";
+            queryAmendConditions = "AND title LIKE '" + prefix + "%'\n";
         }
 
         PrintWriter out = response.getWriter();
@@ -153,7 +164,7 @@ public class MovieListServlet extends HttpServlet {
                 session.setAttribute("pageNumber", pageNumber);
                 session.setAttribute("sortBy", sortBy);
                 // add the search/browse portion to the query
-                query += queryAmmend;
+                query = querySelectClause + queryFromClause + queryAmendJoins + queryWhereClause + queryAmendConditions;
                 // assign the new sql query to the session queryHistory string
                 queryHistory = query;
                 // set it in the session
