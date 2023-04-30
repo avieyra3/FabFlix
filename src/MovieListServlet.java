@@ -69,7 +69,10 @@ public class MovieListServlet extends HttpServlet {
             queryAmmend = "AND genres.name = " + "'" + genre + "'";
         } else if (requestType.split("=")[0].equals("prefix")) {
             String prefix = requestType.split("=")[1];
-            queryAmmend = "AND title LIKE '" + prefix + "%'";
+            if (prefix.equals("*")){
+                queryAmmend = "AND title REGEXP '^[^a-zA-Z0-9]'";
+            } else {
+                queryAmmend = "AND title LIKE '" + prefix + "%'";
         }
 
         PrintWriter out = response.getWriter();
