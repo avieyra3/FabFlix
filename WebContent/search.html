@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="./css/styles-search.css">
+</head>
+<body>
+    <header>
+        <h2 class="logo-header">FabFlix</h2>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#">About</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="shopping-cart.html">Checkout</a></li>
+            </ul>
+        </nav>
+        <h1 class="search-header">Search</h1>
+    </header>
+
+    <div class="height">
+    <div class="search-form">
+        <form ACTION="movie-list.html" id="search-bar" METHOD="GET">
+            <input TYPE="hidden" NAME="request-type" VALUE="search">
+            Title: <input TYPE="text" NAME="title"><br>
+            Year: <input TYPE="number" NAME="year"><br>
+            Director: <input TYPE="text" NAME="director"><br>
+            Star's Name: <input TYPE="text" NAME="star"><br>
+
+            <input TYPE="submit" VALUE="Search">
+        </form>
+    </div>
+    </div>
+
+    <footer>
+        <h3 class="footer-head">Social Media:</h3>
+        <div class="social-media">
+            <a href="https://www.facebook.com/your-page"><button class="social-media-button facebook">Facebook</button></a>
+            <a href="https://www.twitter.com/your-page"><button class="social-media-button twitter">Twitter</button></a>
+            <a href="https://www.instagram.com/your-page"><button class="social-media-button instagram">Instagram</button></a>
+        </div>
+    </footer>
+<!--    <script type='text/javascript' src='search.js'></script>-->
+</body>
+</html>

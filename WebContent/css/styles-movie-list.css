@@ -17,6 +17,11 @@ header {
     font-weight: bold;
     font-size: xxx-large;
 }
+.list-header {
+    font-weight: bold;
+    font-size: xxx-large;
+    margin-left: 250px;
+}
 nav {
     display: flex;
     align-items: center;
@@ -40,6 +45,83 @@ nav li {
 li a {
     color: white;
 }
+.pagesize-select {
+    width: 55px;
+    border-radius: 4px;
+    background-color: slategrey;
+    margin-left: 10px;
+    margin-bottom: 5px;
+    font-size: 18px;
+    color: white;
+}
+
+.sort-select {
+    width: 150px;
+    border-radius: 4px;
+    background-color: slategrey;
+    margin-bottom: 5px;
+    font-size: 18px;
+    color: white;
+    margin-right: 10px;
+}
+
+.moviespp {
+    font-size: 18px;
+    padding-left: 35px;
+}
+
+.order-by {
+    font-size: 18px;
+    padding-left: 10px;
+}
+
+input[type=submit].sort-submit {
+    font-size: 18px;
+    width: 45px;
+    height: 35px;
+    margin-bottom: 5px;
+}
+.sort-container{
+    display: flex;
+    align-items: end;
+    justify-content: right;
+    width: fit-content;
+    padding-left: 50px;
+}
+
+form input[type="text"], input[type="number"] {
+    padding: 10px;
+    font-size: 18px;
+    border-radius: 5px;
+    border: 1px solid;
+    border-radius: 4px;
+    background-color: lightgrey;
+    font-weight: bold;
+}
+
+form input[type="submit"] {
+    background-color: slategrey;
+    color: #ffffff;
+    padding: 10px;
+    font-size: 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    border-radius: 5px;
+    padding: 10px;
+    margin-left: 75px;
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 18px;
+}
+
 body {
     background-color: white;
     display: flex;
@@ -82,12 +164,34 @@ tbody a {
     color: blue;
 }
 
-h1 {
-    padding: 25px;
-    text-align: center;
-    font-weight: bold;
+.page-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 0 auto; /* added */
+    margin-top: 20px; /* added */
+    width: fit-content; /* added */
 }
 
+button[type=submit] {
+    background-color: slategrey;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[type=submit]:hover {
+    background-color: dimgrey;
+}
+#page-number {
+    font-weight: bold;
+    font-size: 28px;
+}
 /* footer at the bottom to display socials */
 footer {
     background-color: darkslategray;

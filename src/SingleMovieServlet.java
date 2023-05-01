@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 // Declaring a WebServlet called SingleMovieServlet, which maps to url "/api/single-star"
 @WebServlet(name = "SingleMovieServlet", urlPatterns = "/api/single-movie")
@@ -56,20 +57,11 @@ public class SingleMovieServlet extends HttpServlet {
 
             // Construct a query with parameter represented by "?"
             String query =
-            "SELECT m.id AS movie_id, m.title AS title, m.year AS year, m.director AS director, " +
-            "GROUP_CONCAT(DISTINCT g.name SEPARATOR ', ') AS genres, " +
-            "GROUP_CONCAT(DISTINCT s.name) AS stars, " +
-            "GROUP_CONCAT(DISTINCT s.id ORDER BY s.name) AS star_id," +
-            "r.rating AS rating " +
-            "FROM movies m " +
-            "JOIN genres_in_movies gm ON m.id = gm.movieId " +
-            "JOIN genres g ON gm.genreId = g.id " +
-            "JOIN stars_in_movies sm ON m.id = sm.moviesId " +
-            "JOIN stars s ON sm.starId = s.id " +
-            "JOIN ratings r ON m.id = r.movieId " +
-            "WHERE m.id = ?" +
-            "GROUP BY m.id, m.title, m.year, m.director, r.rating ";
-
+                    "SELECT DISTINCT movies.id, movies.title, movies.year, movies.director, rating\n" +
+                            "FROM movies JOIN ratings JOIN stars_in_movies JOIN stars JOIN genres_in_movies JOIN genres\n" +
+                            "WHERE movies.id = ratings.movieId AND movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id \n" +
+                            "AND movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id AND movies.id = ?;";
+            System.out.println(query);
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
 
@@ -85,14 +77,44 @@ public class SingleMovieServlet extends HttpServlet {
             // Iterate through each row of rs
             while (result.next()) {
 
-                String movie_id = result.getString("movie_id");
+                String movie_id = result.getString("id");
                 String movie_title = result.getString("title");
                 String movie_year = result.getString("year");
                 String movie_director = result.getString("director");
-                String movie_genres = result.getString("genres");
-                String movie_stars = result.getString("stars");
-                String star_id = result.getString("star_id");
+                String movie_genres = "";
+                String movie_stars = "";
+                String star_id = "";
                 String movie_rating = result.getString("rating");
+
+                Statement statementGenres = conn.createStatement();
+                String queryGenres = "SELECT genres.name\n" +
+                        "FROM movies JOIN genres_in_movies JOIN genres\n" +
+                        "WHERE movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id " +
+                        "AND movies.id = '" + movie_id + "'\n" +
+                        "ORDER BY genres.name;";
+                System.out.println(queryGenres);
+                ResultSet resultGenres = statementGenres.executeQuery(queryGenres);
+                while (resultGenres.next()) {
+                    movie_genres += resultGenres.getString("name") + "|";
+                }
+                movie_genres = movie_genres.substring(0, movie_genres.length() - 1);
+
+                Statement statementStars = conn.createStatement();
+                String queryStars = "SELECT stars.name, stars.id, count(*) as movie_counts\n" +
+                        "FROM movies JOIN stars_in_movies JOIN stars JOIN stars_in_movies as sm2 JOIN movies as m2\n" +
+                        "WHERE movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id AND movies.id = '"
+                        + movie_id + "' AND stars.id = sm2.starId AND sm2.moviesId = m2.id\n" +
+                        "GROUP BY stars.id\n" +
+                        "ORDER BY movie_counts DESC, stars.name ASC";
+                System.out.println(queryStars);
+                ResultSet resultStars = statementStars.executeQuery(queryStars);
+                while (resultStars.next()) {
+                    movie_stars += resultStars.getString("name") + "|";
+                    star_id += resultStars.getString("id") + "|";
+                }
+                movie_stars = movie_stars.substring(0, movie_stars.length() - 1);
+                star_id = star_id.substring(0, star_id.length() - 1);
+
 
                 // Create a JsonObject based on the data we retrieve from rs
 

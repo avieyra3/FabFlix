@@ -52,13 +52,22 @@ function handleResult(resultData) {
     movieDirector.append("<span class=data>" + resultData[0]["movie_director"] + "</span>");
 
     let movieGenres = jQuery("#movie_genres");
-    movieGenres.append("<span class=data>" + resultData[0]["movie_genres"] + "</span>");
+    let genresString = "<span class=data>";
+    const genresArray = resultData[0]["movie_genres"].split("|");
+    for (let i = 0; i < genresArray.length; i++) {
+        genresString += "<a href=movie-list.html?request-type=genre=" + genresArray[i] + ">" + genresArray[i] + "</a>";
+        if (i != genresArray.length - 1) {
+            genresString += ", ";
+        }
+    }
+    genresString += "</span>";
+    movieGenres.append(genresString);
 
     let movieStars = jQuery("#movie_stars");
     let starsString = "<span class=data>";
-    const starsIdArray = resultData[0]["star_id"].split(",");
+    const starsIdArray = resultData[0]["star_id"].split("|");
     console.log(starsIdArray);
-    const starsArray = resultData[0]["movie_stars"].split(",");
+    const starsArray = resultData[0]["movie_stars"].split("|");
     console.log(starsArray);
     for(let i = 0; i < starsIdArray.length; i++)
     {
@@ -68,10 +77,21 @@ function handleResult(resultData) {
             starsString += ", ";
         }
     }
-
     starsString += "</span>";
     console.log(starsString);
     movieStars.append(starsString);
+
+    let movieRating = jQuery("#movie_rating");
+    movieRating.append("<span class=data>" + resultData[0]["movie_rating"] + "</span>");
+
+    let cart = jQuery("#cart");
+    cart.append("<span class=data>" + "<form ACTION='api/cart' id='add-to-cart' METHOD='POST'>" +
+                                    "<input TYPE='hidden' NAME='item' VALUE='" + resultData[0]['movie_id'] + "'>" +
+                                    "<input TYPE='submit' VALUE='Add'></form>" + "</span>");
+
+    let addToCart = $("#add-to-cart");
+    console.log(addToCart);
+    addToCart.submit(handleCartInfo);
 }
 
 /**
@@ -88,3 +108,26 @@ jQuery.ajax({
     url: "api/single-movie?id=" + movieId, // Setting request url, which is mapped by StarsServlet in Stars.java
     success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
 });
+
+function handleCartInfo(cartEvent) {
+    console.log("submit cart form");
+    /**
+     * When users click the submit button, the browser will not direct
+     * users to the url defined in HTML form. Instead, it will call this
+     * event handler when the event is triggered.
+     */
+    cartEvent.preventDefault();
+
+    $.ajax("api/cart", {
+        method: "POST",
+        data: $(this).serialize(),
+        success: function () {
+            console.log("Movie Successfully Added!");
+            alert("Movie Successfully Added!");
+        },
+        error: function () {
+            console.log("Failed To Add Movie");
+            alert("Failed To Add Movie");
+        }
+    });
+}
