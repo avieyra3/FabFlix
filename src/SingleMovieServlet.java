@@ -92,6 +92,7 @@ public class SingleMovieServlet extends HttpServlet {
                         "WHERE movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id " +
                         "AND movies.id = '" + movie_id + "'\n" +
                         "ORDER BY genres.name;";
+                System.out.println(queryGenres);
                 ResultSet resultGenres = statementGenres.executeQuery(queryGenres);
                 while (resultGenres.next()) {
                     movie_genres += resultGenres.getString("name") + "|";
@@ -105,6 +106,7 @@ public class SingleMovieServlet extends HttpServlet {
                         + movie_id + "' AND stars.id = sm2.starId AND sm2.moviesId = m2.id\n" +
                         "GROUP BY stars.id\n" +
                         "ORDER BY movie_counts DESC, stars.name ASC";
+                System.out.println(queryStars);
                 ResultSet resultStars = statementStars.executeQuery(queryStars);
                 while (resultStars.next()) {
                     movie_stars += resultStars.getString("name") + "|";
