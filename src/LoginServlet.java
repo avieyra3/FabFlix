@@ -51,6 +51,7 @@ public class LoginServlet extends HttpServlet {
             JsonObject responseJsonObject = new JsonObject();
             if (!result.next() || !username.equals(result.getString("email")) ||
                     !password.equals(result.getString("password"))) {
+                System.out.println("hello world");
                 // Login fail
                 responseJsonObject.addProperty("status", "fail");
                 // Log to localhost log
