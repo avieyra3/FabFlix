@@ -11,6 +11,6 @@ I. Project 1:
 II. Project 2:  
 - Khoi: Main Page, Searching, Movie List first 3 genres & stars, Single Pages, Shopping Cart/Payment, Submission  
 - Alfonso: Login Page, Browse, Sorting, Prev/Next, Jump Func, Beautify with CSS  
-- Demo Video URL: **Coming Soon**
+- Demo Video URL: https://youtu.be/MoIh1h9q5MA
 - Substring Matching Design: only use LIKE '%%', which means the search term can be any substring and doesn't need to be at the beginning or ending. Also, no typo is allowed
 
