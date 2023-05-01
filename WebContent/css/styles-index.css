@@ -1,0 +1,149 @@
+* {
+    font-family: 'Playfair Display', Serif;
+}
+body {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+/* sets the height of the header and color*/
+header {
+    background-color: darkslategray;
+    color: white;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    padding: 20px;
+}
+
+.logo-header{
+    color: white;
+    font-weight: bold;
+    font-size: xxx-large;
+}
+.homepage{
+    font-weight: bold;
+    font-size: xxx-large;
+    margin-left: 250px;
+}
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+/*provides space in between each hyperlink*/
+nav li {
+    margin-right: 10px;
+}
+/*sets color of hyperlinks to white*/
+li a {
+    color: white;
+}
+h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.contain-four-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 50vh;
+    padding: 50px 100px;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    padding: 20px 0;
+}
+.row a {
+    margin: 0 40px;
+    font-size: 36px;
+    font-weight: bold;
+    text-decoration: none;
+}
+.button-links {
+    display: inline-block;
+    padding: 15px 25px;
+    font-size: 50px;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color: #fff;
+    background-color: darkslategray;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 9px #999;
+}
+.button-links:hover {
+    background-color: #3e8e41
+}
+
+.button-links:active {
+    background-color: #3e8e41;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+.button-links.browse {
+    margin-left: 40px;
+}
+/* footer at the bottom to display socials */
+footer {
+    background-color: darkslategray;
+    padding: 20px;
+    margin-top: auto;
+    height: 60px;
+    display: flex;
+    color: white;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Style the social media buttons */
+.social-media {
+    display: flex;
+    gap: 20px;
+}
+
+.social-media-button {
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Style individual social media buttons */
+.facebook {
+    background-color: #1877F2;
+}
+
+.twitter {
+    background-color: #1DA1F2;
+}
+
+.instagram {
+    background-color: #E1306C;
+}
+
+.footer-head {
+    margin-right: 10px; /* create space between footer-head and the buttons*/
+}

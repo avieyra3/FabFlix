@@ -51,6 +51,7 @@ public class MovieListServlet extends HttpServlet {
         String sortBy = " ORDER BY title ASC, rating ASC"; // the default sort setting
         Integer pageSize = 10; // the default page size
         Integer pageNumber = 0;
+        System.out.println("query: " + query);
         if (requestType == null) {
             ;
         } else if (requestType.equals("search")) {
@@ -80,11 +81,14 @@ public class MovieListServlet extends HttpServlet {
                                     "AND genres.name = " + "'" + genre + "'\n";
         } else if (requestType.split("=")[0].equals("prefix")) {
             String prefix = requestType.split("=")[1];
-            queryAmendConditions = "AND title LIKE '" + prefix + "%'\n";
+            if (prefix.equals("*")) {
+                queryAmendConditions = "AND title REGEXP '^[^a-zA-Z0-9]'\n";
+            } else {
+                queryAmendConditions = "AND title LIKE '" + prefix + "%'\n";
+            }
         }
-
         PrintWriter out = response.getWriter();
-
+        System.out.println("query: " + query);
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("MovieList Connection established!\n");
             Statement statement = connection.createStatement();
@@ -114,7 +118,7 @@ public class MovieListServlet extends HttpServlet {
 
             } else if (requestType.equals("prev")) {
                 pageNumber = (Integer) session.getAttribute("pageNumber");
-                // edge case: we cannot have a page less than zero. 
+                // edge case: we cannot have a page less than zero.
                 pageNumber -= 1;
                 if (pageNumber < 0) {
                     pageNumber = 0;
@@ -149,10 +153,10 @@ public class MovieListServlet extends HttpServlet {
                 // check if the user somehow went straight to a single movie page, if so, this
                 // safety net will still load a list of movies although this technically shouldn't
                 // happen.
-                if (restoreQuery != null && restoreQuery !="") {
+                if (restoreQuery != null && restoreQuery != "") {
                     query = restoreQuery;
                 }
-            }else {
+            } else {
                 // clear previous cached sql session since we are starting a new request-type=search/browse
                 // this means default initializing the variable data
                 String queryHistory = "";
@@ -178,7 +182,7 @@ public class MovieListServlet extends HttpServlet {
             }
             // save query in case user directs to single move/star page
             session.setAttribute("restored-query", query);
-            
+
             // returns the executed query
             ResultSet result = statement.executeQuery(query);
             JsonArray jsonArray = new JsonArray();
