@@ -12,6 +12,8 @@ import jakarta.servlet.ServletConfig;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import org.jasypt.util.password.StrongPasswordEncryptor;
+
 
 
 @WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
@@ -43,15 +45,20 @@ public class LoginServlet extends HttpServlet {
             Statement statement = connection.createStatement();
 
             // perform the sql query to come up with a table with the emails and passwords
-            String query = "SELECT email, password FROM customers WHERE email = " + '"' + username + '"' +
-                    " AND password = " + '"' + password + '"';
+            String query = "SELECT email, password FROM customers WHERE email = " + '"' + username + '"';
             System.out.println(query);
             ResultSet result = statement.executeQuery(query);
 
             JsonObject responseJsonObject = new JsonObject();
-            if (!result.next() || !username.equals(result.getString("email")) ||
-                    !password.equals(result.getString("password"))) {
-                System.out.println("hello world");
+            boolean hasResults = result.next();
+            System.out.println(hasResults);
+            boolean emailMatch = username.equals(result.getString("email"));
+            System.out.println(emailMatch);
+            boolean passwordMatch = new StrongPasswordEncryptor().checkPassword(password, result.getString("password"));
+            System.out.println(passwordMatch);
+
+            if (!hasResults || !emailMatch || !passwordMatch) {
+                System.out.println("Login fails");
                 // Login fail
                 responseJsonObject.addProperty("status", "fail");
                 // Log to localhost log
@@ -61,6 +68,7 @@ public class LoginServlet extends HttpServlet {
 
             } else {
                 // Login success:
+                System.out.println("Login success");
                 // set this user into the session
                 request.getSession().setAttribute("user", new User(username));
                 responseJsonObject.addProperty("status", "success");

@@ -47,11 +47,6 @@ public class FormRecaptcha extends HttpServlet {
         out.write(jsonArray.toString());
         out.close();
 
-        try {
-            ;
-        } catch (Exception e) {
-            return;
-        }
         System.out.println("-------FormRecaptcha doGet Done!\n");
     }
 
