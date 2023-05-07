@@ -37,13 +37,34 @@ function submitLoginForm(formSubmitEvent) {
     formSubmitEvent.preventDefault();
 
     $.ajax(
-        "api/login", {
+        "form-recaptcha", {
             method: "POST",
-            // Serialize the login form to the data sent by POST request
             data: login_form.serialize(),
-            success: handleLoginResult
+            success: function (resultData) {
+                console.log(resultData);
+                if (resultData[0]["recaptcha-success"])
+                {
+                    $.ajax(
+                        "api/login", {
+                            method: "POST",
+                            // Serialize the login form to the data sent by POST request
+                            data: login_form.serialize(),
+                            success: handleLoginResult
+                        }
+                    );
+                } else {
+                    console.log("recaptcha failed");
+                    $("#login_error_message").text("Human verification failed.");
+                }
+            },
+            error: function () {
+                console.log("form-recaptcha POST request failed");
+                $("#login_error_message").text("Human verification failed.");
+            }
         }
     );
+
+
 }
 
 // Bind the submit action of the form to a handler function

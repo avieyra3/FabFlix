@@ -52,6 +52,7 @@ public class LoginFilter implements Filter {
         allowedURIs.add("login.js");
         allowedURIs.add("api/login");
         allowedURIs.add("styles-login.css");
+        allowedURIs.add("form-recaptcha");
     }
 
     public void destroy() {
