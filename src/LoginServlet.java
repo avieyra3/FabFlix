@@ -33,6 +33,7 @@ public class LoginServlet extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        System.out.println("\n-------LoginServlet doPost Executing!");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
@@ -50,14 +51,9 @@ public class LoginServlet extends HttpServlet {
             ResultSet result = statement.executeQuery(query);
 
             JsonObject responseJsonObject = new JsonObject();
-            boolean hasResults = result.next();
-            System.out.println(hasResults);
-            boolean emailMatch = username.equals(result.getString("email"));
-            System.out.println(emailMatch);
-            boolean passwordMatch = new StrongPasswordEncryptor().checkPassword(password, result.getString("password"));
-            System.out.println(passwordMatch);
 
-            if (!hasResults || !emailMatch || !passwordMatch) {
+            if (!result.next() || !username.equals(result.getString("email"))
+                    || !(new StrongPasswordEncryptor().checkPassword(password, result.getString("password")))) {
                 System.out.println("Login fails");
                 // Login fail
                 responseJsonObject.addProperty("status", "fail");
@@ -86,5 +82,6 @@ public class LoginServlet extends HttpServlet {
         } finally {
             out.close();
         }
+        System.out.println("-------LoginServlet doPost Done!\n");
     }
 }
