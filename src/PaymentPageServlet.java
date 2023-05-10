@@ -84,13 +84,17 @@ public class PaymentPageServlet extends HttpServlet{
             }
 
             // Check if credit card info are correct
-            Statement statement = connection.createStatement();
             String query = "SELECT *\n" +
                     "FROM creditcards\n" +
-                    "WHERE id = '" + cardNumber + "' AND firstName = '" + firstName +
-                    "' AND lastName = '" + lastName + "' AND expirationDate = '" + expireDate + "';\n";
+                    "WHERE id = ? AND firstName = ? AND lastName = ? AND expirationDate = ?;\n";
             System.out.println(query);
-            ResultSet result = statement.executeQuery(query);
+
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, cardNumber);
+            statement.setString(2, firstName);
+            statement.setString(3, lastName);
+            statement.setString(4, expireDate);
+            ResultSet result = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
             JsonObject jsonAuth = new JsonObject();
@@ -99,13 +103,17 @@ public class PaymentPageServlet extends HttpServlet{
                 jsonArray.add(jsonAuth);
 
                 //Get customerID from cardNumber
-                Statement statementGetCustomerID = connection.createStatement();
                 String queryGetCustomerID = "SELECT id\n" +
                         "FROM customers\n" +
-                        "WHERE ccId = '" + cardNumber + "';\n";
-                System.out.println(queryGetCustomerID);
-                ResultSet resultCustomerID = statementGetCustomerID.executeQuery(queryGetCustomerID);
+                        "WHERE ccId = ?;\n";
+                System.out.println("queryGetCustomerID: " + queryGetCustomerID);
+
+                // execute prepared statement
+                PreparedStatement statementGetCustomerID = connection.prepareStatement(queryGetCustomerID);
+                statementGetCustomerID.setString(1, cardNumber);
+                ResultSet resultCustomerID = statementGetCustomerID.executeQuery();
                 System.out.println(resultCustomerID);
+
                 String customerID = "";
                 while (resultCustomerID.next()) {
                     customerID = resultCustomerID.getString("id");
@@ -115,19 +123,23 @@ public class PaymentPageServlet extends HttpServlet{
                 //Insert into sales table with customerID and previousItems
                 java.sql.Date todaysDate = new java.sql.Date(System.currentTimeMillis());
                 for (String item : previousItems.keySet()) {
-                    Statement statementInsertSales = connection.createStatement();
                     String queryInsertSales = "INSERT INTO sales \n" +
-                            "VALUES (NULL, '" + customerID + "', '" + item + "', '" +
-                            todaysDate + "', " + previousItems.get(item) + ");\n";
+                            "VALUES (NULL, ?, ?, ?, ?);\n"; //(NULL, '" + customerID + "', '" + item + "', '" +
+                            //todaysDate + "', " + previousItems.get(item) + ");\n";
                     System.out.println(queryInsertSales);
-                    int rowInserted = statementInsertSales.executeUpdate(queryInsertSales);
+                    PreparedStatement statementInsertSales = connection.prepareStatement(queryInsertSales);
+                    statementInsertSales.setString(1, customerID);
+                    statementInsertSales.setString(2, item);
+                    statementInsertSales.setDate(3, todaysDate);
+                    statementGetCustomerID.setInt(4, previousItems.get(item));
+                    int rowInserted = statementInsertSales.executeUpdate();
                     statementInsertSales.close();
 
                     //Add sales IDs to session's cache
-                    Statement statementSaleData = connection.createStatement();
                     String querySalesData = "SELECT LAST_INSERT_ID() AS id;\n";
                     System.out.println(querySalesData);
-                    ResultSet resultSalesData = statementSaleData.executeQuery(querySalesData);
+                    PreparedStatement statementSaleData = connection.prepareStatement(querySalesData);
+                    ResultSet resultSalesData = statementSaleData.executeQuery();
                     while (resultSalesData.next()) {
                         int saleID = resultSalesData.getInt("id");
                         synchronized (previousSales) {

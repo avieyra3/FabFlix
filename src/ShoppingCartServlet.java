@@ -78,12 +78,14 @@ public class ShoppingCartServlet extends HttpServlet {
 
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("ShoppingCart Connection established!\n");
-            Statement statement = connection.createStatement();
+
             String query = "SELECT *\n" +
                     "FROM movies\n" +
                     "WHERE movies.id IN " + sqlCartList + ";";
             System.out.println(query);
-            ResultSet result = statement.executeQuery(query);
+
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet result = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
 

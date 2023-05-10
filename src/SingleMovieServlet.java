@@ -61,7 +61,7 @@ public class SingleMovieServlet extends HttpServlet {
                             "FROM movies JOIN ratings JOIN stars_in_movies JOIN stars JOIN genres_in_movies JOIN genres\n" +
                             "WHERE movies.id = ratings.movieId AND movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id \n" +
                             "AND movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id AND movies.id = ?;";
-            System.out.println(query);
+            System.out.println("query: " + query);
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
 
@@ -91,11 +91,11 @@ public class SingleMovieServlet extends HttpServlet {
                         "WHERE movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id " +
                         "AND movies.id = ?\n" +
                         "ORDER BY genres.name;";
-                System.out.println(queryGenres);
+                System.out.println("queryGenres: " + queryGenres);
 
                 PreparedStatement statementGenres = conn.prepareStatement(queryGenres);
                 statementGenres.setString(1, movie_id);
-                ResultSet resultGenres = statementGenres.executeQuery(queryGenres);
+                ResultSet resultGenres = statementGenres.executeQuery();
 
                 while (resultGenres.next()) {
                     movie_genres += resultGenres.getString("name") + "|";
@@ -108,11 +108,11 @@ public class SingleMovieServlet extends HttpServlet {
                         "AND movies.id = ? AND stars.id = sm2.starId AND sm2.moviesId = m2.id\n" +
                         "GROUP BY stars.id\n" +
                         "ORDER BY movie_counts DESC, stars.name ASC";
-                System.out.println(queryStars);
+                System.out.println("queryStars: " + queryStars);
 
                 PreparedStatement statementStars = conn.prepareStatement(queryStars);
                 statementStars.setString(1, movie_id);
-                ResultSet resultStars = statementStars.executeQuery(queryStars);
+                ResultSet resultStars = statementStars.executeQuery();
 
                 while (resultStars.next()) {
                     movie_stars += resultStars.getString("name") + "|";
