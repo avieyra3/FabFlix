@@ -14,7 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 
 @WebServlet(name = "MovieListServlet", urlPatterns = "/api/movielist")
@@ -44,17 +44,23 @@ public class MovieListServlet extends HttpServlet {
         // this is the data sql query string that will be modified according to search/browse and sort.
         String query = "";
         String querySelectClause = "SELECT DISTINCT movies.id, movies.title, movies.year, movies.director, rating\n";
-        String queryFromClause = "FROM movies JOIN ratings\n";
-        String queryWhereClause = "WHERE movies.id = ratings.movieId\n";
+        String queryFromClause = "FROM movies JOIN ratings\n ";
+        String queryWhereClause = "WHERE movies.id = ratings.movieId\n ";
         String queryAmendJoins = ""; // this is sql string that will include info from search/browse
         String queryAmendConditions = ""; // this is sql string that will include info from search/browse
         String sortBy = " ORDER BY title ASC, rating ASC"; // the default sort setting
         Integer pageSize = 10; // the default page size
         Integer pageNumber = 0;
-        System.out.println("query: " + query);
+
         if (requestType == null) {
             ;
         } else if (requestType.equals("search")) {
+            session.setAttribute("request-type", "search");
+            HashMap<String, String> searchMap = new HashMap<>();
+            queryAmendJoins = "JOIN stars_in_movies JOIN stars\n";
+            queryAmendConditions = "AND movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id " +
+                    "AND title LIKE ? AND director LIKE ? AND stars.name LIKE ?";
+
             String title = request.getParameter("title");
             String year = request.getParameter("year");
             String director = request.getParameter("director");
@@ -62,29 +68,39 @@ public class MovieListServlet extends HttpServlet {
 
             System.out.println(title + " " + year + " " + director + " " + star);
 
-            queryAmendJoins = "JOIN stars_in_movies JOIN stars\n";
-            queryAmendConditions = "AND movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id\n";
-            if (title != "")
-                queryAmendConditions += "AND title LIKE '%" + title + "%' ";
-            if (director != "")
-                queryAmendConditions += "AND director LIKE '%" + director + "%' ";
-            if (star != "")
-                queryAmendConditions += "AND stars.name LIKE '%" + star + "%' ";
+            searchMap.put("title", "%" + title + "%");
+            searchMap.put("director", "%" + director + "%");
+            searchMap.put("star", "%" + star + "%");
+
             if (year != "")
-                queryAmendConditions += "AND year = '" + year + "' ";
-            queryAmendConditions += "\n";
+                queryAmendConditions += " AND year = ?\n";
+
+            searchMap.put("year", year);
+            session.setAttribute("search", searchMap);
+
         } else if (requestType.split("=")[0].equals("genre")) {
+            session.setAttribute("request-type", "genre");
             String genre = requestType.split("=")[1];
+            HashMap<String, String> genreMap = new HashMap<>();
+            genreMap.put("genre", genre);
+            session.setAttribute("genre", genreMap);
 
             queryAmendJoins = "JOIN genres_in_movies JOIN genres\n";
             queryAmendConditions = "AND movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id\n" +
-                                    "AND genres.name = " + "'" + genre + "'\n";
+                    "AND genres.name = ?\n";
+
         } else if (requestType.split("=")[0].equals("prefix")) {
+            session.setAttribute("request-type", "prefix");
             String prefix = requestType.split("=")[1];
+            HashMap<String, String> prefixMap = new HashMap<>();
+
             if (prefix.equals("*")) {
-                queryAmendConditions = "AND title REGEXP '^[^a-zA-Z0-9]'\n";
+                prefixMap.put("prefix", "^[^a-zA-Z0-9]");
+                queryAmendConditions = "AND title REGEXP ?\n";
+
             } else {
-                queryAmendConditions = "AND title LIKE '" + prefix + "%'\n";
+                prefixMap.put("prefix", prefix + "%");
+                queryAmendConditions = "AND title LIKE ?\n";
             }
         }
         PrintWriter out = response.getWriter();
@@ -94,6 +110,7 @@ public class MovieListServlet extends HttpServlet {
             Statement statement = connection.createStatement();
 
             if (requestType.equals("next")) {
+                session.setAttribute("sub-request", "next");
                 // We get the sessions data and reconstruct the query to incorporate the offset (new page)
                 pageNumber = (Integer) session.getAttribute("pageNumber");
                 pageSize = (Integer) session.getAttribute("pageSize");
@@ -107,13 +124,9 @@ public class MovieListServlet extends HttpServlet {
                 }
                 session.setAttribute("pageNumber", pageNumber);
 
-                sortBy = (String) session.getAttribute("sortBy");
-                //calculate offset
-                int offset = pageSize * pageNumber;
-
                 // fetch the previous sql query using session
                 String queryHistory = (String) session.getAttribute("queryHistory");
-                query = queryHistory + sortBy + " LIMIT " + pageSize + " OFFSET " + offset;
+                query = queryHistory + " ? LIMIT ? OFFSET ?";
                 System.out.println("next query: " + query);
 
             } else if (requestType.equals("prev")) {
@@ -167,24 +180,30 @@ public class MovieListServlet extends HttpServlet {
                 session.setAttribute("pageSize", pageSize);
                 session.setAttribute("pageNumber", pageNumber);
                 session.setAttribute("sortBy", sortBy);
+
                 // add the search/browse portion to the query
                 query = querySelectClause + queryFromClause + queryAmendJoins + queryWhereClause + queryAmendConditions;
-                // assign the new sql query to the session queryHistory string
+                // assigns session queryHistory string to the new query
                 queryHistory = query;
                 // set it in the session
                 session.setAttribute("queryHistory", queryHistory);
                 // print out to debug
                 System.out.println("queryHistory: " + queryHistory);
 
-                // add default sort and page number 
-                query += sortBy + " LIMIT " + pageSize;
-                System.out.println("default query: " + query);
+                // add default sort and page number
+                query += " ORDER BY title ASC, rating ASC LIMIT 10;";
             }
+
             // save query in case user directs to single move/star page
             session.setAttribute("restored-query", query);
+            System.out.println("query: " + query);
 
-            // returns the executed query
-            ResultSet result = statement.executeQuery(query);
+            PreparedStatement preparedQuery = connection.prepareStatement(query);
+            //sets value for the placeholders for execution
+            updateStatement(preparedQuery, session);
+            ResultSet result = preparedQuery.executeQuery();
+            System.out.println("result statement: " + result);
+
             JsonArray jsonArray = new JsonArray();
             Integer totalResults = 0;
             while (result.next()) {
@@ -194,39 +213,14 @@ public class MovieListServlet extends HttpServlet {
                 String movie_year = result.getString("year");
                 String movie_director = result.getString("director");
                 String movie_rating = result.getString("rating");
-                String movie_genres = "";
-                String movie_stars = "";
-                String movie_star_IDs = "";
+                String movie_genres = concatGenres(connection, movie_id);
+                String[] starsNstarsID = concatStarsNId(connection, movie_id);
+                String movie_stars = starsNstarsID[0];
+                String movie_star_IDs = starsNstarsID[1];
 
-                Statement statementGenres = connection.createStatement();
-                String queryGenres = "SELECT genres.name\n" +
-                        "FROM movies JOIN genres_in_movies JOIN genres\n" +
-                        "WHERE movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id " +
-                        "AND movies.id = '" + movie_id + "'\n" +
-                        "ORDER BY genres.name LIMIT 3;";
-                ResultSet resultGenres = statementGenres.executeQuery(queryGenres);
-                while (resultGenres.next()) {
-                    movie_genres += resultGenres.getString("name") + ", ";
-                }
-                movie_genres = movie_genres.substring(0, movie_genres.length() - 2);
-
-                Statement statementStars = connection.createStatement();
-                String queryStars = "SELECT stars.name, stars.id, count(*) as movie_counts\n" +
-                        "FROM movies JOIN stars_in_movies JOIN stars JOIN stars_in_movies as sm2 JOIN movies as m2\n" +
-                        "WHERE movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id AND movies.id = '"
-                        + movie_id + "' AND stars.id = sm2.starId AND sm2.moviesId = m2.id\n" +
-                        "GROUP BY stars.id\n" +
-                        "ORDER BY movie_counts DESC, stars.name ASC LIMIT 3";
-                ResultSet resultStars = statementStars.executeQuery(queryStars);
-                while (resultStars.next()) {
-                    movie_stars += resultStars.getString("name") + ", ";
-                    movie_star_IDs += resultStars.getString("id") + ", ";
-                }
-                movie_stars = movie_stars.substring(0, movie_stars.length() - 2);
-                movie_star_IDs = movie_star_IDs.substring(0, movie_star_IDs.length() - 2);
-
-                System.out.println(movie_id + " " + movie_title + " " + movie_year + " " + movie_director
-                        + " " + movie_rating + " " + movie_genres + " " + movie_stars);
+                System.out.println("movie id: " + movie_id + " title: " + movie_title + " year: " + movie_year +
+                        " director: " + movie_director + " rating: " + movie_rating + " genres: " + movie_genres +
+                        " stars: " + movie_stars);
 
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("movie_id", movie_id);
@@ -240,11 +234,6 @@ public class MovieListServlet extends HttpServlet {
                 jsonObject.addProperty("pageNumber", (Integer) session.getAttribute("pageNumber"));
                 System.out.println(jsonObject);
                 jsonArray.add(jsonObject);
-
-                resultGenres.close();
-                resultStars.close();
-                statementGenres.close();
-                statementStars.close();
             }
             session.setAttribute("totalResults", totalResults);
             result.close();
@@ -264,5 +253,74 @@ public class MovieListServlet extends HttpServlet {
         } finally {
             out.close();
         }
+    }
+    protected void updateStatement(PreparedStatement statement, HttpSession session) throws SQLException{
+
+        if (session.getAttribute("request-type").equals("search"))
+        {
+            HashMap<String, String> searchData = (HashMap<String, String>) session.getAttribute("search");
+            statement.setString(1, searchData.get("title"));
+            statement.setString(2, searchData.get("director"));
+            statement.setString(3, searchData.get("star"));
+            if (!searchData.get("year").equals(""))
+                statement.setString(4, searchData.get("year"));
+        }
+        if(session.getAttribute("request-type").equals("genre")) {
+            HashMap<String, String> browseData = (HashMap<String, String>) session.getAttribute("genre");
+            statement.setString(1, browseData.get("genre"));
+        }
+        if (session.getAttribute("request-type").equals("prefix")) {
+            HashMap<String, String> prefixData = (HashMap<String, String>) session.getAttribute("prefix");
+            statement.setString(1, prefixData.get("prefix"));
+        }
+//        if (session.getAttribute("sub-request").equals("next")) {
+//            statement.setString(index_placeholder + 1, (String) session.getAttribute("sortBy"));
+//            Integer pagesize = (Integer) session.getAttribute("pageSize");
+//            Integer pagenumber = (Integer) session.getAttribute("pageNumber");
+//            statement.setInt(index_placeholder + 2, pagesize); // LIMIT
+//            statement.setInt(index_placeholder + 3, pagenumber * pagesize); // OFFSET
+//        }
+    }
+    protected String concatGenres(Connection connection, String movieId) throws SQLException {
+        String movie_genres = "";
+        String queryGenres = "SELECT genres.name\n" +
+                "FROM movies JOIN genres_in_movies JOIN genres\n" +
+                "WHERE movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id " +
+                "AND movies.id = ?\n" +
+                "ORDER BY genres.name LIMIT 3;";
+        PreparedStatement statementGenres = connection.prepareStatement(queryGenres);
+        statementGenres.setString(1, movieId);
+        ResultSet resultGenres = statementGenres.executeQuery();
+        while (resultGenres.next()) {
+            movie_genres += resultGenres.getString("name") + ", ";
+        }
+        resultGenres.close();
+        statementGenres.close();
+        return movie_genres.substring(0, movie_genres.length() - 2);
+    }
+
+    protected String[] concatStarsNId(Connection connection, String movie_Id)
+            throws SQLException {
+        String[] strArr = new String[2];
+        String movie_stars = "";
+        String movie_star_IDs = "";
+        String queryStars = "SELECT stars.name, stars.id, count(*) as movie_counts\n" +
+                "FROM movies JOIN stars_in_movies JOIN stars JOIN stars_in_movies as sm2 JOIN movies as m2\n" +
+                "WHERE movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id AND movies.id = ?" +
+                " AND stars.id = sm2.starId AND sm2.moviesId = m2.id\n" +
+                "GROUP BY stars.id\n" +
+                "ORDER BY movie_counts DESC, stars.name ASC LIMIT 3";
+        PreparedStatement statementStars = connection.prepareStatement(queryStars);
+        statementStars.setString(1, movie_Id);
+        ResultSet resultStars = statementStars.executeQuery();
+        while (resultStars.next()) {
+            movie_stars += resultStars.getString("name") + ", ";
+            movie_star_IDs += resultStars.getString("id") + ", ";
+        }
+        strArr[0] = movie_stars.substring(0, movie_stars.length() - 2);
+        strArr[1] = movie_star_IDs.substring(0, movie_star_IDs.length() - 2);
+        resultStars.close();
+        statementStars.close();
+        return strArr;
     }
 }

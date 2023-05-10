@@ -10,6 +10,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import jakarta.servlet.ServletConfig;
 import javax.sql.DataSource;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -40,13 +41,14 @@ public class LoginServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("Login Connection established!\n");
-            Statement statement = connection.createStatement();
 
             // perform the sql query to come up with a table with the emails and passwords
-            String query = "SELECT email, password FROM customers WHERE email = " + '"' + username + '"' +
-                    " AND password = " + '"' + password + '"';
+            String query = "SELECT email, password FROM customers WHERE email = ? AND password = ?\n";
             System.out.println(query);
-            ResultSet result = statement.executeQuery(query);
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, username);
+            statement.setString(2, password);
+            ResultSet result = statement.executeQuery();
 
             JsonObject responseJsonObject = new JsonObject();
             if (!result.next() || !username.equals(result.getString("email")) ||
