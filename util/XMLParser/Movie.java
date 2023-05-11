@@ -15,4 +15,15 @@ public class Movie {
         this.stars = stars;
         this.genres = genres;
     }
+
+    public String getTitle() { return title; }
+    public int getYear() { return year; }
+    public String getDirector() { return director; }
+
+    public String toString() {
+
+        return "Title:" + getTitle() + ", " +
+                "Year:" + getYear() + ", " +
+                "Director:" + getDirector() + ", ";
+    }
 }
