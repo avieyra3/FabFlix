@@ -5,9 +5,20 @@
 public class User {
 
     private final String username;
+    private boolean isEmployee;
 
     public User(String username) {
+
         this.username = username;
+        this.isEmployee = false;
+    }
+
+    public boolean isEmployee() {
+        return isEmployee;
+    }
+
+    public void updateEmployeeStatus() {
+        this.isEmployee = true;
     }
 
 }
