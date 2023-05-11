@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DomParser {
 
@@ -7,7 +9,10 @@ public class DomParser {
 
 
 
+
     public static void main(String[] args) {
+
+
         // create an instance
         MainParser mainParser = new MainParser();
 
@@ -17,6 +22,10 @@ public class DomParser {
         ActorParser actorParser = new ActorParser();
 
         actorParser.run();
+
+        CastParser castParser = new CastParser();
+
+        castParser.run();
     }
 
 }

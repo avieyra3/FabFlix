@@ -7,11 +7,17 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class MainParser {
     Document dom;
 
+    HashMap<String, String> catCodes = new HashMap<String, String>();
+
+
     public void run() {
+
+        initCatCodes();
 
         // parse the xml file and get the dom object
         parseXmlFile();
@@ -81,11 +87,46 @@ public class MainParser {
                 System.out.println(" - " + title.getFirstChild().getNodeValue());
                 Element year = (Element) film.getElementsByTagName("year").item(0);
                 System.out.println("    - " + year.getFirstChild().getNodeValue());
-
+                Element cats = (Element) film.getElementsByTagName("cats").item(0);
+                parseGenres(cats);
             } catch (Exception e) {
                 System.out.println("this is an error");
                 e.printStackTrace();
             }
         }
+    }
+
+    private void parseGenres(Element cats) {
+        NodeList catList = cats.getElementsByTagName("cat");
+        for (int i = 0; i < catList.getLength(); i++) {
+            try {
+                Element cat = (Element) catList.item(i);
+                System.out.println("       - " + catCodes.get(cat.getFirstChild().getNodeValue()));
+            } catch (Exception e) {
+                System.out.println("this is an error");
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void initCatCodes() {
+        catCodes.put("Susp", "Thriller");
+        catCodes.put("CnR", "Cops and Robbers");
+        catCodes.put("Dram", "Drama");
+        catCodes.put("West", "Western");
+        catCodes.put("Myst", "Mystery");
+        catCodes.put("S.F.", "Sci-Fi");
+        catCodes.put("Advt", "Adventure");
+        catCodes.put("Horr", "Horror");
+        catCodes.put("Romt", "Romance");
+        catCodes.put("Comd", "Comedy");
+        catCodes.put("Musc", "Musical");
+        catCodes.put("Docu", "Documentary");
+        catCodes.put("Porn", "Pornography (including soft)");
+        catCodes.put("Noir", "Black");
+        catCodes.put("BioP", "Biography");
+        catCodes.put("TV", "TV Show");
+        catCodes.put("TVs", "TV Series");
+        catCodes.put("TVm", "TV Miniseries");
     }
 }
