@@ -8,14 +8,14 @@ public class DomParser {
         HashMap<String, String> starNamesFromDB = new HashMap<String, String>();
         HashMap<String, Integer> genresFromDB = new HashMap<String, Integer>();
 
-        MainParser mainParser = new MainParser();
-        mainParser.run();
+//        MainParser mainParser = new MainParser();
+//        mainParser.run();
 //
 //        ActorParser actorParser = new ActorParser();
 //        actorParser.run();
 //
-//        CastParser castParser = new CastParser();
-//        castParser.run();
+        CastParser castParser = new CastParser();
+        castParser.run();
 
         Connection conn = null;
 

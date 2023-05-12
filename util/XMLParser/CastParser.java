@@ -8,9 +8,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class CastParser {
-    Document dom;
+    private Document dom;
+    private ArrayList<ArrayList> dataForStarsInMoviesTable = new ArrayList<ArrayList>();
 
     public void run() {
 
@@ -21,9 +23,11 @@ public class CastParser {
         parseDocument();
 
         // iterate through the list and print the data
-        //printData();
+        System.out.println(dataForStarsInMoviesTable.toString());
 
     }
+
+    public ArrayList<ArrayList> getDataForStarsInMoviesTable() { return dataForStarsInMoviesTable; }
 
     private void parseXmlFile() {
         // get the factory
@@ -62,6 +66,7 @@ public class CastParser {
             NodeList castList = ((Element) filmcList.item(i)).getElementsByTagName("m");
             for (int j = 0; j < castList.getLength(); j++) {
                 try {
+                    ArrayList<String> rowStarsInMoviesTable = new ArrayList<String>();
                     Element cast = (Element) castList.item(j);
                     Element movieTitle = (Element) cast.getElementsByTagName("t").item(0);
                     Element actorName = (Element) cast.getElementsByTagName("a").item(0);
@@ -69,6 +74,9 @@ public class CastParser {
                         throw new Exception("Ignore unknown actor with import role");
                     }
                     System.out.println(movieTitle.getFirstChild().getNodeValue() + " - " + actorName.getFirstChild().getNodeValue());
+                    rowStarsInMoviesTable.add(movieTitle.getFirstChild().getNodeValue());
+                    rowStarsInMoviesTable.add(actorName.getFirstChild().getNodeValue());
+                    dataForStarsInMoviesTable.add(rowStarsInMoviesTable);
                 } catch (Exception e) {
                     System.out.println("there is an error");
                     e.printStackTrace();
