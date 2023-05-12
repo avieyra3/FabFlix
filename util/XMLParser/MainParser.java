@@ -55,58 +55,68 @@ public class MainParser {
         NodeList directorFilmsList = documentElement.getElementsByTagName("directorfilms");
         NodeList filmsList = documentElement.getElementsByTagName("films");
         for (int i = 0; i < directorFilmsList.getLength(); i++) {
-
+            Element directorFilms = (Element) directorFilmsList.item(i);
+            Element director = (Element) directorFilms.getElementsByTagName("director").item(0);
+            Element directorName = (Element) director.getElementsByTagName("dirname").item(0);
             try {
-                Element directorFilms = (Element) directorFilmsList.item(i);
-                Element director = (Element) directorFilms.getElementsByTagName("director").item(0);
-                Element directorName = (Element) director.getElementsByTagName("dirname").item(0);
                 System.out.println(directorName.getFirstChild().getNodeValue());
-                Element films = (Element) directorFilms.getElementsByTagName("films").item(0);
-                parseMovie(films);
+
             } catch (Exception e) {
-                System.out.println("this is an error");
+                System.out.println("director-name-empty");
                 e.printStackTrace();
             }
-//            // get the directorfilms element
-//            Element element = (Element) directorFilmsList.item(i);
-//
-//            // get the directorfilms object
-//            Movie movie = parseMovie(element);
-//
-//            // add it to list
-//            movies.add(movie);
+            Element films = (Element) directorFilms.getElementsByTagName("films").item(0);
+            parseMovie(films);
         }
     }
 
     private void parseMovie(Element films) {
         NodeList filmList = films.getElementsByTagName("film");
         for (int i = 0; i < filmList.getLength(); i++) {
+            Element film = (Element) filmList.item(i);
+            Element title = (Element) film.getElementsByTagName("t").item(0);
             try {
-                Element film = (Element) filmList.item(i);
-                Element title = (Element) film.getElementsByTagName("t").item(0);
+                if (title.getFirstChild().getNodeValue().equals("NKT"))
+                    throw new Exception("Unknown film title");
                 System.out.println(" - " + title.getFirstChild().getNodeValue());
-                Element year = (Element) film.getElementsByTagName("year").item(0);
-                System.out.println("    - " + year.getFirstChild().getNodeValue());
-                Element cats = (Element) film.getElementsByTagName("cats").item(0);
-                parseGenres(cats);
             } catch (Exception e) {
-                System.out.println("this is an error");
+                System.out.println(" - movie-title-empty");
                 e.printStackTrace();
             }
+
+            Element year = (Element) film.getElementsByTagName("year").item(0);
+            try {
+                System.out.println("    - " + year.getFirstChild().getNodeValue());
+            } catch (Exception e) {
+                System.out.println(" - movie-year-empty");
+                e.printStackTrace();
+            }
+
+            Element cats = (Element) film.getElementsByTagName("cats").item(0);
+            parseGenres(cats);
         }
     }
 
     private void parseGenres(Element cats) {
-        NodeList catList = cats.getElementsByTagName("cat");
-        for (int i = 0; i < catList.getLength(); i++) {
-            try {
+        try {
+            NodeList catList = cats.getElementsByTagName("cat");
+            for (int i = 0; i < catList.getLength(); i++) {
                 Element cat = (Element) catList.item(i);
-                System.out.println("       - " + catCodes.get(cat.getFirstChild().getNodeValue()));
-            } catch (Exception e) {
-                System.out.println("this is an error");
-                e.printStackTrace();
+                try {
+                    if (catCodes.get(cat.getFirstChild().getNodeValue()) == null)
+                        System.out.println("       - WRONGCAT " + cat.getFirstChild().getNodeValue());
+                    else
+                        System.out.println("       - " + catCodes.get(cat.getFirstChild().getNodeValue()));
+                } catch (Exception e) {
+                    System.out.println("       - movie-genre-empty");
+                    e.printStackTrace();
+                }
             }
+        } catch (Exception e) {
+            System.out.println("       - movie-genres-empty");
+            e.printStackTrace();
         }
+
     }
 
     private void initCatCodes() {

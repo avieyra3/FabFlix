@@ -65,6 +65,9 @@ public class CastParser {
                     Element cast = (Element) castList.item(j);
                     Element movieTitle = (Element) cast.getElementsByTagName("t").item(0);
                     Element actorName = (Element) cast.getElementsByTagName("a").item(0);
+                    if (actorName.getFirstChild().getNodeValue().equals("sa") || actorName.getFirstChild().getNodeValue().equals("s a")) {
+                        throw new Exception("Ignore unknown actor with import role");
+                    }
                     System.out.println(movieTitle.getFirstChild().getNodeValue() + " - " + actorName.getFirstChild().getNodeValue());
                 } catch (Exception e) {
                     System.out.println("there is an error");

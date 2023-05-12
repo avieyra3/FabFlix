@@ -46,14 +46,20 @@ public class ActorParser {
 
         NodeList actorList = actors.getElementsByTagName("actor");
         for (int i = 0; i < actorList.getLength(); i++) {
+            Element actor = (Element) actorList.item(i);
+            Element stageName = (Element) actor.getElementsByTagName("stagename").item(0);
             try {
-                Element actor = (Element) actorList.item(i);
-                Element stageName = (Element) actor.getElementsByTagName("stagename").item(0);
                 System.out.println(stageName.getFirstChild().getNodeValue());
-                Element dob = (Element) actor.getElementsByTagName("dob").item(0);
+            } catch (Exception e) {
+                System.out.println("actor-name-missing");
+                e.printStackTrace();
+            }
+
+            Element dob = (Element) actor.getElementsByTagName("dob").item(0);
+            try {
                 System.out.println(" - " + dob.getFirstChild().getNodeValue());
             } catch (Exception e) {
-                System.out.println("this is an error");
+                System.out.println(" - actor-dob-missing");
                 e.printStackTrace();
             }
         }
