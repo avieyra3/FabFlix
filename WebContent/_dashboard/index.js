@@ -6,11 +6,11 @@ function handleMetaData(resultData) {
     // Populate the meta table
     let metaData = jQuery("#metadata");
 
-    // Iterate through resultData, no more than 20 entries
+    // Iterate through each table in resultData
     for (let i = 0; i < resultData.length; i++) {
 
-        let html = "<h2 class='meta-header'>" + resultData[i]["table"] + "</h2>";
-        html += "<table id=movie_table className='table table-hover'>";
+        let html = "<h2 class='meta_header'>" + resultData[i]["table"] + "</h2>";
+        html += "<table id=meta_table class='table table-hover'>";
         html += "<thead class='black white-text'><tr><th>Field</th><th>DataType</th></tr></thead>";
         html += "<tbody>";
 
