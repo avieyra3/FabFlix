@@ -1,0 +1,49 @@
+* {
+    font-family: 'Playfair Display', Serif;
+}
+body {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+/* sets the height of the header and color*/
+header {
+    background-color: darkslategray;
+    color: white;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    padding: 20px;
+}
+
+.logo-header{
+    color: white;
+    font-weight: bold;
+    font-size: xxx-large;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+/*provides space in between each hyperlink*/
+nav li {
+    margin-right: 10px;
+}
+/*sets color of hyperlinks to white*/
+li a {
+    color: white;
+}
