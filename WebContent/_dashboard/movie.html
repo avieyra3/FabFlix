@@ -2,9 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/styles-add-movie.css">
+    <title>Add Movie Page</title>
 </head>
 <body>
+    <header>
+        <h2 class="logo-header">FabFlix</h2>
+        <nav>
+            <ul>
+                <li class="homepage"><a href="../index.html">Homepage</a></li>
+                <li class="browse"><a href="../browse.html">Browse Movies</a></li>
+                <li class="add-star"><a href="star.html">Add A Star</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- display: flex text body -->
+    <div class="text-body">
+
+        <!-- id="movie-id" will out put the ids of movie, genre and star -->
+        <p id="movie-id"></p><br>
+
+        <!-- Form for user to fill out -->
+        <form id="movie-form">
+
+            <!-- movie -->
+            <label for="movie-title">Movie Title:</label><br>
+            <input type="text" id="movie-title" name="movie-title" required><br>
+
+            <!-- release Year -->
+            <label for="year">Year:</label><br>
+            <input type="number" id="year" name="year" required><br>
+
+            <!-- Director -->
+            <label for="director">Director:</label><br>
+            <input type="text" id="director" name="director" required><br>
+
+            <!-- Star -->
+            <label for="star">Star Name</label><br>
+            <input type="text" id="star" name="star" required><br>
+
+            <!-- Birth Year -->
+            <label for="star-year">Birth Year:</label><br>
+            <input type="number" id="star-year" name="star-year"><br>
+
+            <!-- Genre -->
+            <label for="genre">Genre:</label><br>
+            <input type="text" id="genre" name="genre" required><br>
+
+            <!-- Submit the form -->
+            <input type="submit" value="Submit">
+        </form>
+        <!-- output message result -->
+        <div id="message-report"></div>
+    </div>
+
+    <!-- need appropriate scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="./movie.js"></script>
 
 </body>
 </html>
