@@ -6,4 +6,13 @@ public class Star {
         this.name = name;
         this.birthYear = birthYear;
     }
+
+    public String getName() { return name; }
+    public int getBirthYear() { return birthYear; }
+
+    public String toString() {
+
+        return "Name:" + getName() + ", " +
+                "Birth Year:" + getBirthYear() + ", ";
+    }
 }
