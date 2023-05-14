@@ -9,13 +9,15 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class MainParser {
     private Document dom;
     private HashMap<String, String> catCodes = new HashMap<String, String>();
-    private ArrayList<ArrayList> dataForMoviesTable = new ArrayList<ArrayList>();
-    private ArrayList<ArrayList> dataForGenresTable = new ArrayList<ArrayList>();
+    private HashMap<String, ArrayList> dataForMoviesTable = new HashMap<String, ArrayList>();
+    private ArrayList<ArrayList> dataForGenresInMoviesTable = new ArrayList<ArrayList>();
+    private HashSet<String> dataForGenresTable = new HashSet<String>();
 
     public void run() {
         initCatCodes();
@@ -27,12 +29,14 @@ public class MainParser {
         parseDocument();
 
         // iterate through the list and print the data
-        System.out.println(dataForMoviesTable.toString());
-        System.out.println(dataForGenresTable.toString());
+        //System.out.println(dataForMoviesTable.toString());
+        //System.out.println(dataForGenresInMoviesTable.toString());
+        //System.out.println(dataForGenresTable.toString());
     }
 
-    public ArrayList<ArrayList> getDataForMoviesTable() { return dataForMoviesTable; }
-    public ArrayList<ArrayList> getDataForGenresTable() { return dataForGenresTable; }
+    public HashMap<String, ArrayList> getDataForMoviesTable() { return dataForMoviesTable; }
+    public ArrayList<ArrayList> getDataForGenresInMoviesTable() { return dataForGenresInMoviesTable; }
+    public HashSet<String> getDataForGenresTable() { return dataForGenresTable; }
 
     private void parseXmlFile() {
         // get the factory
@@ -83,14 +87,14 @@ public class MainParser {
 
             Element film = (Element) filmList.item(i);
             Element title = (Element) film.getElementsByTagName("t").item(0);
+            String movieTitle = null;
             try {
                 if (title.getFirstChild().getNodeValue().equals("NKT"))
                     throw new Exception("Unknown film title");
                 System.out.println(" - " + title.getFirstChild().getNodeValue());
-                rowMovieTable.add(title.getFirstChild().getNodeValue());
+                movieTitle = title.getFirstChild().getNodeValue();
             } catch (Exception e) {
                 System.out.println(" - movie-title-empty");
-                rowMovieTable.add(null);
                 e.printStackTrace();
             }
 
@@ -105,10 +109,10 @@ public class MainParser {
             }
 
             Element cats = (Element) film.getElementsByTagName("cats").item(0);
-            parseGenres(cats, (String) rowMovieTable.get(0));
+            parseGenres(cats, movieTitle);
 
             rowMovieTable.add(strDirectorName);
-            dataForMoviesTable.add(rowMovieTable);
+            dataForMoviesTable.put(movieTitle, rowMovieTable);
         }
     }
 
@@ -123,11 +127,13 @@ public class MainParser {
                     if (catCodes.get(cat.getFirstChild().getNodeValue()) == null) {
                         System.out.println("       - WRONGCAT " + cat.getFirstChild().getNodeValue());
                         rowGenresTable.add(cat.getFirstChild().getNodeValue());
+                        dataForGenresTable.add(cat.getFirstChild().getNodeValue());
                     } else {
                         System.out.println("       - " + catCodes.get(cat.getFirstChild().getNodeValue()));
                         rowGenresTable.add(catCodes.get(cat.getFirstChild().getNodeValue()));
+                        dataForGenresTable.add(catCodes.get(cat.getFirstChild().getNodeValue()));
                     }
-                    dataForGenresTable.add(rowGenresTable);
+                    dataForGenresInMoviesTable.add(rowGenresTable);
                 } catch (Exception e) {
                     System.out.println("       - movie-genre-empty");
                     e.printStackTrace();

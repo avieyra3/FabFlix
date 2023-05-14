@@ -9,10 +9,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CastParser {
     private Document dom;
     private ArrayList<ArrayList> dataForStarsInMoviesTable = new ArrayList<ArrayList>();
+    private HashMap<String, ArrayList> dataForMoviesTable = new HashMap<String, ArrayList>();
+    private HashMap<String, Integer> dataForStarsTable = new HashMap<String, Integer>();
 
     public void run() {
 
@@ -23,12 +26,13 @@ public class CastParser {
         parseDocument();
 
         // iterate through the list and print the data
-        System.out.println(dataForStarsInMoviesTable.toString());
+        //System.out.println(dataForStarsInMoviesTable.toString());
 
     }
 
     public ArrayList<ArrayList> getDataForStarsInMoviesTable() { return dataForStarsInMoviesTable; }
-
+    public void receiveDataForStarsTable(HashMap<String, Integer> dataForStarsTable) { this.dataForStarsTable = dataForStarsTable; }
+    public void receiveDataForMoviesTable(HashMap<String, ArrayList> dataForMoviesTable) { this.dataForMoviesTable = dataForMoviesTable; }
     private void parseXmlFile() {
         // get the factory
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -71,11 +75,22 @@ public class CastParser {
                     Element movieTitle = (Element) cast.getElementsByTagName("t").item(0);
                     Element actorName = (Element) cast.getElementsByTagName("a").item(0);
                     if (actorName.getFirstChild().getNodeValue().equals("sa") || actorName.getFirstChild().getNodeValue().equals("s a")) {
-                        throw new Exception("Ignore unknown actor with import role");
+                        throw new Exception("Ignore unknown actor with important role");
                     }
                     System.out.println(movieTitle.getFirstChild().getNodeValue() + " - " + actorName.getFirstChild().getNodeValue());
                     rowStarsInMoviesTable.add(movieTitle.getFirstChild().getNodeValue());
                     rowStarsInMoviesTable.add(actorName.getFirstChild().getNodeValue());
+                    if (!dataForMoviesTable.containsKey(movieTitle.getFirstChild().getNodeValue())) {
+                        ArrayList<Object> tempArray = new ArrayList<Object>();
+                        tempArray.add(null);
+                        tempArray.add(null);
+                        dataForMoviesTable.put(movieTitle.getFirstChild().getNodeValue(), tempArray);
+                        System.out.println(movieTitle.getFirstChild().getNodeValue() + " is not in main243.xml but in casts124.xml");
+                    }
+                    if (!dataForStarsTable.containsKey(actorName.getFirstChild().getNodeValue())) {
+                        dataForStarsTable.put(actorName.getFirstChild().getNodeValue(), null);
+                        System.out.println(actorName.getFirstChild().getNodeValue() + " is not in actors63.xml but in casts124.xml");
+                    }
                     dataForStarsInMoviesTable.add(rowStarsInMoviesTable);
                 } catch (Exception e) {
                     System.out.println("there is an error");
