@@ -54,7 +54,7 @@ public class AddStarServlet extends HttpServlet {
             System.out.println("AddStarServlet Connection established!\n");
 
             // create call to procedure
-            String procedure = "CALL InsertStar(?, ?, @newStarId)";
+            String procedure = "CALL add_star(?, ?, @starId)";
             PreparedStatement addStar = connection.prepareStatement(procedure);
             // set values for placeholder
             addStar.setString(1, starName);
@@ -73,7 +73,7 @@ public class AddStarServlet extends HttpServlet {
             if (hasResults) {
                 ResultSet resultSet = addStar.getResultSet();
                 if (resultSet.next()) {
-                    newStarId = resultSet.getString("newStarId");
+                    newStarId = resultSet.getString("starId");
                     System.out.println("New Star ID: " + newStarId);
                 }
             }
