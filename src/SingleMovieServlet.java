@@ -56,11 +56,14 @@ public class SingleMovieServlet extends HttpServlet {
             // Get a connection from dataSource
 
             // Construct a query with parameter represented by "?"
-            String query =
-                    "SELECT DISTINCT movies.id, movies.title, movies.year, movies.director, rating\n" +
-                            "FROM movies JOIN ratings JOIN stars_in_movies JOIN stars JOIN genres_in_movies JOIN genres\n" +
-                            "WHERE movies.id = ratings.movieId AND movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id \n" +
-                            "AND movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id AND movies.id = ?;";
+            String query = "SELECT DISTINCT m.id, m.title, m.year, m.director, IFNULL(r.rating, 'N/A') AS rating\n" +
+                    "FROM movies m \n" +
+                    "LEFT JOIN ratings r ON m.id = r.movieId\n" +
+                    "JOIN stars_in_movies sim ON m.id = sim.moviesId \n" +
+                    "JOIN stars s ON sim.starId = s.id\n" +
+                    "JOIN genres_in_movies gim ON m.id = gim.movieId \n" +
+                    "JOIN genres g ON gim.genreId = g.id\n" +
+                    "WHERE m.id = ?";
             System.out.println("query: " + query);
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);

@@ -14,7 +14,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
-import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 
 @WebServlet(name = "MovieListServlet", urlPatterns = "/api/movielist")
@@ -22,6 +23,11 @@ public class MovieListServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
     private DataSource dataSource;
+
+    private static Set<String> stringSet;
+    static {
+        stringSet = new HashSet<>();
+    }
 
     public void init(ServletConfig config) {
         try {
@@ -43,65 +49,72 @@ public class MovieListServlet extends HttpServlet {
         // These strings are the default/preliminary value before modification
         // this is the data sql query string that will be modified according to search/browse and sort.
         String query = "";
-        String querySelectClause = "SELECT DISTINCT movies.id, movies.title, movies.year, movies.director, rating\n";
-        String queryFromClause = "FROM movies JOIN ratings\n ";
-        String queryWhereClause = "WHERE movies.id = ratings.movieId\n ";
+        String querySelectClause = "SELECT DISTINCT m.id, m.title, m.year, m.director, IFNULL(r.rating, 'N/A') AS rating\n"+
+                "FROM movies m LEFT JOIN ratings r ON m.id = r.movieId ";
         String queryAmendJoins = ""; // this is sql string that will include info from search/browse
-        String queryAmendConditions = ""; // this is sql string that will include info from search/browse
-        String sortBy = " ORDER BY title ASC, rating ASC"; // the default sort setting
+        String queryAmendConditions = "WHERE 1=1 "; // this is sql string that will include info from search/browse
+        String sortBy = "ORDER BY title ASC, rating ASC"; // the default sort setting
         Integer pageSize = 10; // the default page size
         Integer pageNumber = 0;
+        stringSet = sortSet(); // instantiate the set with the sort associated statements
 
         if (requestType == null) {
             ;
         } else if (requestType.equals("search")) {
+            // set the session request type as search
             session.setAttribute("request-type", "search");
-            HashMap<String, String> searchMap = new HashMap<>();
-            queryAmendJoins = "JOIN stars_in_movies JOIN stars\n";
-            queryAmendConditions = "AND movies.id = stars_in_movies.moviesId AND stars_in_movies.starId = stars.id " +
-                    "AND title LIKE ? AND director LIKE ? AND stars.name LIKE ?";
+            queryAmendJoins = "JOIN stars_in_movies sim ON m.id = sim.moviesId JOIN stars s ON sim.starId = s.id\n";
 
+            // get the search parameters to identify search conditions
             String title = request.getParameter("title");
             String year = request.getParameter("year");
             String director = request.getParameter("director");
-            String star = request.getParameter("star");
+            String starName = request.getParameter("star");
+            System.out.println(title + " " + year + " " + director + " " + starName);
 
-            System.out.println(title + " " + year + " " + director + " " + star);
+            // instantiate session attributes even if the strings are empty. This will make it easier to update the
+            // statements later since the attributes at the very least will never be null.
+            session.setAttribute("title", title);
+            session.setAttribute("year", year);
+            session.setAttribute("director", director);
+            session.setAttribute("starName", starName);
 
-            searchMap.put("title", "%" + title + "%");
-            searchMap.put("director", "%" + director + "%");
-            searchMap.put("star", "%" + star + "%");
-
-            if (year != "")
-                queryAmendConditions += " AND year = ?\n";
-
-            searchMap.put("year", year);
-            session.setAttribute("search", searchMap);
+            // check which parameters are not empty and save inside a session
+            if (!title.isEmpty())
+                queryAmendConditions += "AND title LIKE ?";
+            if (!year.isEmpty())
+                queryAmendConditions += "AND year = ?";
+            if (!director.isEmpty())
+                queryAmendConditions += "AND director LIKE ?";
+            if (!starName.isEmpty())
+                queryAmendConditions += "AND star LIKE ?";
 
         } else if (requestType.split("=")[0].equals("genre")) {
+            // Set the session request type as genre
             session.setAttribute("request-type", "genre");
+            // get the genre value str and set in the session
             String genre = requestType.split("=")[1];
-            HashMap<String, String> genreMap = new HashMap<>();
-            genreMap.put("genre", genre);
-            session.setAttribute("genre", genreMap);
-
-            queryAmendJoins = "JOIN genres_in_movies JOIN genres\n";
-            queryAmendConditions = "AND movies.id = genres_in_movies.movieId AND genres_in_movies.genreId = genres.id\n" +
-                    "AND genres.name = ?\n";
+            session.setAttribute("genre", genre);
+            // append the needed strings for joins and conditions
+            queryAmendJoins = "JOIN genres_in_movies gim ON m.id = gim.movieId JOIN genres g ON gim.genreId = g.id\n";
+            queryAmendConditions = "WHERE g.name = ?\n";
 
         } else if (requestType.split("=")[0].equals("prefix")) {
+            //set the session request type as prefix
             session.setAttribute("request-type", "prefix");
+            // get the prefix value and add it to the session
             String prefix = requestType.split("=")[1];
-            HashMap<String, String> prefixMap = new HashMap<>();
 
+            // special case requires that if prefix = * then we use regexp
             if (prefix.equals("*")) {
-                prefixMap.put("prefix", "^[^a-zA-Z0-9]");
-                queryAmendConditions = "AND title REGEXP ?\n";
+                prefix = "^[^a-zA-Z0-9]";
+                queryAmendConditions = "WHERE title REGEXP ?\n";
 
-            } else {
-                prefixMap.put("prefix", prefix + "%");
-                queryAmendConditions = "AND title LIKE ?\n";
-            }
+            } else
+                queryAmendConditions = "WHERE title LIKE ?\n";
+            // have to set the wildcard here because of the * condition otherwise,
+            // would need to check it in the update
+            session.setAttribute("prefix", prefix + '%');
         }
         PrintWriter out = response.getWriter();
         System.out.println("query: " + query);
@@ -110,12 +123,15 @@ public class MovieListServlet extends HttpServlet {
             Statement statement = connection.createStatement();
 
             if (requestType.equals("next")) {
+                // set sub request as next
                 session.setAttribute("sub-request", "next");
                 // We get the sessions data and reconstruct the query to incorporate the offset (new page)
                 pageNumber = (Integer) session.getAttribute("pageNumber");
                 pageSize = (Integer) session.getAttribute("pageSize");
 
-                // edge case: make sure that the user cannot exceed the max page size.
+                // edge case: make sure that the user cannot exceed the max page size. For example, we do not
+                // add a page if the number of results in the previous query was less than 10. Of course,
+                // we do need to watch out for the case where totalResults is at 10 which this doesnt solve for.
                 Integer totalResults = (Integer) session.getAttribute("totalResults"); // gets the total results
                 if (totalResults < pageSize) {
                     ;
@@ -124,12 +140,14 @@ public class MovieListServlet extends HttpServlet {
                 }
                 session.setAttribute("pageNumber", pageNumber);
 
-                // fetch the previous sql query using session
+                // fetch the previous sql query session and sort parameters
                 String queryHistory = (String) session.getAttribute("queryHistory");
-                query = queryHistory + " ? LIMIT ? OFFSET ?";
+                sortBy = (String) session.getAttribute("sortBy");
+                query = queryHistory + sortBy + " LIMIT ? OFFSET ?";
                 System.out.println("next query: " + query);
 
             } else if (requestType.equals("prev")) {
+                session.setAttribute("sub-request", "prev");
                 pageNumber = (Integer) session.getAttribute("pageNumber");
                 // edge case: we cannot have a page less than zero.
                 pageNumber -= 1;
@@ -137,28 +155,34 @@ public class MovieListServlet extends HttpServlet {
                     pageNumber = 0;
                 }
                 session.setAttribute("pageNumber", pageNumber);
-                pageSize = (Integer) session.getAttribute("pageSize");
-                sortBy = (String) session.getAttribute("sortBy");
-                //calculate offset
-                int offset = pageSize * pageNumber;
 
-                // fetch the previous sql query using session
+                // fetch the previous sql query session and sort parameters
                 String queryHistory = (String) session.getAttribute("queryHistory");
-                query = queryHistory + sortBy + " LIMIT " + pageSize + " OFFSET " + offset;
-                System.out.println("next query: " + query);
+                sortBy = (String) session.getAttribute("sortBy");
+                query = queryHistory + sortBy + " LIMIT ? OFFSET ? ";
+                System.out.println("\nprev query: " + query + "\n");
 
-            } else if (requestType.equals("sort")) { // if request type is sort, then use the pre-existing sql query
+            } else if (requestType.equals("sort")) {
+                // if request type is sort, then use the pre-existing sql query and set sub-request to sort
+                // check first if the sortBy parameter is equal to any of the preset to for security measures
+                // if the sortBy variable returned does not match any of the strings in stringSet revert to
+                // default string
+                session.setAttribute("sub-request", "sort");
                 sortBy = request.getParameter("sort-by");
+                if (!stringSet.contains(sortBy)) {
+                    sortBy = "ORDER BY title ASC, rating ASC";
+                    session.setAttribute("sortBy", sortBy);
+
+                } else
+                    session.setAttribute("sortBy", sortBy);
+
                 pageSize = Integer.parseInt(request.getParameter("page-size"));
                 session.setAttribute("pageSize", pageSize);
-                session.setAttribute("sortBy", sortBy);
-                pageNumber = (Integer) session.getAttribute("pageNumber");
 
                 // fetch the previous sql query using session
                 String queryHistory = (String) session.getAttribute("queryHistory");
-                query = queryHistory;
-                query += " " + sortBy + " LIMIT " + pageSize + " OFFSET " + (pageSize * pageNumber);
-                System.out.println("query with sort: " + query);
+                query = queryHistory + sortBy + " LIMIT ? OFFSET ?";
+                System.out.println("\nquery with sort: " + query + "\n");
 
             } else if (requestType.split("=")[0].equals("restore")) {
 
@@ -180,9 +204,10 @@ public class MovieListServlet extends HttpServlet {
                 session.setAttribute("pageSize", pageSize);
                 session.setAttribute("pageNumber", pageNumber);
                 session.setAttribute("sortBy", sortBy);
+                session.setAttribute("sub-request", "");
 
                 // add the search/browse portion to the query
-                query = querySelectClause + queryFromClause + queryAmendJoins + queryWhereClause + queryAmendConditions;
+                query = querySelectClause + queryAmendJoins + queryAmendConditions;
                 // assigns session queryHistory string to the new query
                 queryHistory = query;
                 // set it in the session
@@ -255,31 +280,44 @@ public class MovieListServlet extends HttpServlet {
         }
     }
     protected void updateStatement(PreparedStatement statement, HttpSession session) throws SQLException{
-
+        int paramIndex = 1;
         if (session.getAttribute("request-type").equals("search"))
         {
-            HashMap<String, String> searchData = (HashMap<String, String>) session.getAttribute("search");
-            statement.setString(1, searchData.get("title"));
-            statement.setString(2, searchData.get("director"));
-            statement.setString(3, searchData.get("star"));
-            if (!searchData.get("year").equals(""))
-                statement.setString(4, searchData.get("year"));
+            // get back the respect attributes
+            String title = (String) session.getAttribute("title");
+            String director = (String) session.getAttribute("director");
+            String starName = (String) session.getAttribute("starName");
+            String yearStr = (String) session.getAttribute("year");
+            System.out.println(title + " " + yearStr + " " + director + " " + starName);
+            // update the placeholders
+            if (!title.isEmpty())
+                statement.setString(paramIndex++, '%' + title + '%');
+            if (!yearStr.isEmpty()) {
+                int year = Integer.parseInt(yearStr);
+                statement.setInt(paramIndex++, year);
+            }
+            if (!director.isEmpty())
+                statement.setString(paramIndex++, '%' + director + '%');
+            if(!starName.isEmpty())
+                statement.setString(paramIndex++, '%' + starName + '%');
         }
         if(session.getAttribute("request-type").equals("genre")) {
-            HashMap<String, String> browseData = (HashMap<String, String>) session.getAttribute("genre");
-            statement.setString(1, browseData.get("genre"));
+            statement.setString(paramIndex++, (String) session.getAttribute("genre"));
         }
         if (session.getAttribute("request-type").equals("prefix")) {
-            HashMap<String, String> prefixData = (HashMap<String, String>) session.getAttribute("prefix");
-            statement.setString(1, prefixData.get("prefix"));
+            statement.setString(paramIndex++, (String) session.getAttribute("prefix"));
         }
-//        if (session.getAttribute("sub-request").equals("next")) {
-//            statement.setString(index_placeholder + 1, (String) session.getAttribute("sortBy"));
-//            Integer pagesize = (Integer) session.getAttribute("pageSize");
-//            Integer pagenumber = (Integer) session.getAttribute("pageNumber");
-//            statement.setInt(index_placeholder + 2, pagesize); // LIMIT
-//            statement.setInt(index_placeholder + 3, pagenumber * pagesize); // OFFSET
-//        }
+        // check if there was a sub request
+        String subRequest = (String) session.getAttribute("sub-request");
+        if (subRequest.equals("next") || subRequest.equals("prev") || subRequest.equals("sort")) {
+            System.out.println("\nSub Request in prog....\n");
+            int psize = (Integer) session.getAttribute("pageSize");
+            int pnum = (Integer) session.getAttribute("pageNumber");
+            int offset = psize * pnum;
+            statement.setInt(paramIndex++, psize); // LIMIT
+            statement.setInt(paramIndex++, offset); // OFFSET
+
+        }
     }
     protected String concatGenres(Connection connection, String movieId) throws SQLException {
         String movie_genres = "";
@@ -322,5 +360,18 @@ public class MovieListServlet extends HttpServlet {
         resultStars.close();
         statementStars.close();
         return strArr;
+    }
+
+    private HashSet<String> sortSet() {
+        HashSet<String> paramSet = new HashSet<>();
+        paramSet.add("ORDER BY title ASC, rating ASC");
+        paramSet.add("ORDER BY title ASC, rating DESC");
+        paramSet.add("ORDER BY title DESC, rating ASC");
+        paramSet.add("ORDER BY title DESC, rating DESC");
+        paramSet.add("ORDER BY rating ASC, title ASC");
+        paramSet.add("ORDER BY rating ASC, title DESC");
+        paramSet.add("ORDER BY rating DESC, title ASC");
+        paramSet.add("ORDER BY rating DESC, title DESC");
+        return paramSet;
     }
 }
