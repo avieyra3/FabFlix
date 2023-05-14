@@ -55,20 +55,20 @@ public class ActorParser {
             String actorName = null;
             Integer actorDOB = null;
             try {
-                System.out.println(stageName.getFirstChild().getNodeValue());
+                //System.out.println(stageName.getFirstChild().getNodeValue());
                 actorName = stageName.getFirstChild().getNodeValue();
             } catch (Exception e) {
-                System.out.println("actor-name-missing");
-                e.printStackTrace();
+                //System.out.println("actor-name-missing");
+                //e.printStackTrace();
             }
 
             Element dob = (Element) actor.getElementsByTagName("dob").item(0);
             try {
-                System.out.println(" - " + Integer.parseInt(dob.getFirstChild().getNodeValue()));
+                //System.out.println(" - " + Integer.parseInt(dob.getFirstChild().getNodeValue()));
                 actorDOB = Integer.parseInt(dob.getFirstChild().getNodeValue());
             } catch (Exception e) {
-                System.out.println(" - actor-dob-missing");
-                e.printStackTrace();
+                //System.out.println(" - actor-dob-missing");
+                //e.printStackTrace();
             }
             dataForStarsTable.put(actorName, actorDOB);
         }

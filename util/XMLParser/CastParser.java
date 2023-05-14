@@ -59,8 +59,8 @@ public class CastParser {
                 NodeList filmcList = ((Element) dirFilmsList.item(i)).getElementsByTagName("filmc");
                 parseFilmCasts(filmcList);
             } catch (Exception e) {
-                System.out.println("there is an error");
-                e.printStackTrace();
+                //System.out.println("there is an error");
+                //e.printStackTrace();
             }
         }
     }
@@ -77,7 +77,7 @@ public class CastParser {
                     if (actorName.getFirstChild().getNodeValue().equals("sa") || actorName.getFirstChild().getNodeValue().equals("s a")) {
                         throw new Exception("Ignore unknown actor with important role");
                     }
-                    System.out.println(movieTitle.getFirstChild().getNodeValue() + " - " + actorName.getFirstChild().getNodeValue());
+                    //System.out.println(movieTitle.getFirstChild().getNodeValue() + " - " + actorName.getFirstChild().getNodeValue());
                     rowStarsInMoviesTable.add(movieTitle.getFirstChild().getNodeValue());
                     rowStarsInMoviesTable.add(actorName.getFirstChild().getNodeValue());
                     if (!dataForMoviesTable.containsKey(movieTitle.getFirstChild().getNodeValue())) {
@@ -85,16 +85,16 @@ public class CastParser {
                         tempArray.add(null);
                         tempArray.add(null);
                         dataForMoviesTable.put(movieTitle.getFirstChild().getNodeValue(), tempArray);
-                        System.out.println(movieTitle.getFirstChild().getNodeValue() + " is not in main243.xml but in casts124.xml");
+                        //System.out.println(movieTitle.getFirstChild().getNodeValue() + " is not in main243.xml but in casts124.xml");
                     }
                     if (!dataForStarsTable.containsKey(actorName.getFirstChild().getNodeValue())) {
                         dataForStarsTable.put(actorName.getFirstChild().getNodeValue(), null);
-                        System.out.println(actorName.getFirstChild().getNodeValue() + " is not in actors63.xml but in casts124.xml");
+                        //System.out.println(actorName.getFirstChild().getNodeValue() + " is not in actors63.xml but in casts124.xml");
                     }
                     dataForStarsInMoviesTable.add(rowStarsInMoviesTable);
                 } catch (Exception e) {
-                    System.out.println("there is an error");
-                    e.printStackTrace();
+                    //System.out.println("there is an error");
+                    //e.printStackTrace();
                 }
             }
         }

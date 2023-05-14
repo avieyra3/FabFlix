@@ -68,12 +68,12 @@ public class MainParser {
             Element directorName = (Element) director.getElementsByTagName("dirname").item(0);
             String strDirectorName = "";
             try {
-                System.out.println(directorName.getFirstChild().getNodeValue());
+                //System.out.println(directorName.getFirstChild().getNodeValue());
                 strDirectorName = directorName.getFirstChild().getNodeValue();
             } catch (Exception e) {
-                System.out.println("director-name-empty");
+                //System.out.println("director-name-empty");
                 strDirectorName = null;
-                e.printStackTrace();
+                //e.printStackTrace();
             }
             Element films = (Element) directorFilms.getElementsByTagName("films").item(0);
             parseMovie(films, strDirectorName);
@@ -91,21 +91,21 @@ public class MainParser {
             try {
                 if (title.getFirstChild().getNodeValue().equals("NKT"))
                     throw new Exception("Unknown film title");
-                System.out.println(" - " + title.getFirstChild().getNodeValue());
+                //System.out.println(" - " + title.getFirstChild().getNodeValue());
                 movieTitle = title.getFirstChild().getNodeValue();
             } catch (Exception e) {
-                System.out.println(" - movie-title-empty");
-                e.printStackTrace();
+                //System.out.println(" - movie-title-empty");
+                //e.printStackTrace();
             }
 
             Element year = (Element) film.getElementsByTagName("year").item(0);
             try {
-                System.out.println("    - " + Integer.parseInt(year.getFirstChild().getNodeValue()));
+                //System.out.println("    - " + Integer.parseInt(year.getFirstChild().getNodeValue()));
                 rowMovieTable.add(Integer.parseInt(year.getFirstChild().getNodeValue()));
             } catch (Exception e) {
-                System.out.println(" - movie-year-empty");
+                //System.out.println(" - movie-year-empty");
                 rowMovieTable.add(null);
-                e.printStackTrace();
+                //e.printStackTrace();
             }
 
             Element cats = (Element) film.getElementsByTagName("cats").item(0);
@@ -125,23 +125,23 @@ public class MainParser {
                     ArrayList<String> rowGenresTable = new ArrayList<String>();
                     rowGenresTable.add(movieTitle);
                     if (catCodes.get(cat.getFirstChild().getNodeValue()) == null) {
-                        System.out.println("       - WRONGCAT " + cat.getFirstChild().getNodeValue());
+                        //System.out.println("       - WRONGCAT " + cat.getFirstChild().getNodeValue());
                         rowGenresTable.add(cat.getFirstChild().getNodeValue());
                         dataForGenresTable.add(cat.getFirstChild().getNodeValue());
                     } else {
-                        System.out.println("       - " + catCodes.get(cat.getFirstChild().getNodeValue()));
+                        //System.out.println("       - " + catCodes.get(cat.getFirstChild().getNodeValue()));
                         rowGenresTable.add(catCodes.get(cat.getFirstChild().getNodeValue()));
                         dataForGenresTable.add(catCodes.get(cat.getFirstChild().getNodeValue()));
                     }
                     dataForGenresInMoviesTable.add(rowGenresTable);
                 } catch (Exception e) {
-                    System.out.println("       - movie-genre-empty");
-                    e.printStackTrace();
+                    //System.out.println("       - movie-genre-empty");
+                    //e.printStackTrace();
                 }
             }
         } catch (Exception e) {
-            System.out.println("       - movie-genres-empty");
-            e.printStackTrace();
+            //System.out.println("       - movie-genres-empty");
+            //e.printStackTrace();
         }
 
     }
