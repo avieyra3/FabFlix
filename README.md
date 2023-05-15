@@ -31,6 +31,8 @@ III. Project 3:
     ShoppingCartServlet.java,
     SingleMovieServlet.java,
     SingleStarServlet.java,
+    UpdateSecurePasswordCustomer.java,
+    UpdateSecurePasswordEmployee.java,
     DomParser.java
 - XML parsing time optimization strategies:
   - Using batch insert to execute large amount of SQL statements all at once instead of one-by-one to reduce the overhead of communication
