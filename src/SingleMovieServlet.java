@@ -38,7 +38,7 @@ public class SingleMovieServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        System.out.println("SingleMovie doGet EXECUTING");
+        System.out.println("\n-------SingleMovie doGet EXECUTING");
         response.setContentType("application/json"); // Response mime type
 
         // Retrieve parameter id from url request.
@@ -59,10 +59,10 @@ public class SingleMovieServlet extends HttpServlet {
             String query = "SELECT DISTINCT m.id, m.title, m.year, m.director, IFNULL(r.rating, 'N/A') AS rating\n" +
                     "FROM movies m \n" +
                     "LEFT JOIN ratings r ON m.id = r.movieId\n" +
-                    "JOIN stars_in_movies sim ON m.id = sim.moviesId \n" +
-                    "JOIN stars s ON sim.starId = s.id\n" +
-                    "JOIN genres_in_movies gim ON m.id = gim.movieId \n" +
-                    "JOIN genres g ON gim.genreId = g.id\n" +
+                    "LEFT JOIN stars_in_movies sim ON m.id = sim.moviesId \n" +
+                    "LEFT JOIN stars s ON sim.starId = s.id\n" +
+                    "LEFT JOIN genres_in_movies gim ON m.id = gim.movieId \n" +
+                    "LEFT JOIN genres g ON gim.genreId = g.id\n" +
                     "WHERE m.id = ?";
             System.out.println("query: " + query);
             // Declare our statement
@@ -71,9 +71,11 @@ public class SingleMovieServlet extends HttpServlet {
             // Set the parameter represented by "?" in the query to the id we get from url,
             // num 1 indicates the first "?" in the query
             statement.setString(1, id);
+            System.out.println("placeholder values: " + id);
 
             // Perform the query
             ResultSet result = statement.executeQuery();
+            System.out.println("ResultSet: " + result);
 
             JsonArray jsonArray = new JsonArray();
 
@@ -103,7 +105,7 @@ public class SingleMovieServlet extends HttpServlet {
                 while (resultGenres.next()) {
                     movie_genres += resultGenres.getString("name") + "|";
                 }
-                movie_genres = movie_genres.substring(0, movie_genres.length() - 1);
+                movie_genres = movie_genres.substring(0, Math.max(0,movie_genres.length() - 1));
 
                 String queryStars = "SELECT stars.name, stars.id, count(*) as movie_counts\n" +
                         "FROM movies JOIN stars_in_movies JOIN stars JOIN stars_in_movies as sm2 JOIN movies as m2\n" +
@@ -121,8 +123,8 @@ public class SingleMovieServlet extends HttpServlet {
                     movie_stars += resultStars.getString("name") + "|";
                     star_id += resultStars.getString("id") + "|";
                 }
-                movie_stars = movie_stars.substring(0, movie_stars.length() - 1);
-                star_id = star_id.substring(0, star_id.length() - 1);
+                movie_stars = movie_stars.substring(0, Math.max(0, movie_stars.length() - 1));
+                star_id = star_id.substring(0, Math.max(0, star_id.length() - 1));
 
 
                 // Create a JsonObject based on the data we retrieve from rs
@@ -136,6 +138,7 @@ public class SingleMovieServlet extends HttpServlet {
                 jsonObject.addProperty("movie_stars", movie_stars);
                 jsonObject.addProperty("star_id", star_id);
                 jsonObject.addProperty("movie_rating", movie_rating);
+                System.out.println("Response JSON Object: " + jsonObject);
 
                 jsonArray.add(jsonObject);
             }
@@ -152,6 +155,7 @@ public class SingleMovieServlet extends HttpServlet {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("errorMessage", e.getMessage());
             out.write(jsonObject.toString());
+            e.printStackTrace();
 
             // Log error to localhost log
             request.getServletContext().log("Error:", e);
@@ -160,7 +164,7 @@ public class SingleMovieServlet extends HttpServlet {
         } finally {
             out.close();
         }
-
+        System.out.println("-------SingleMovieServlet doGet Done!\n");
         // Always remember to close db connection after usage. Here it's done by try-with-resources
 
     }
