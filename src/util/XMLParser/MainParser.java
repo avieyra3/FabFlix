@@ -48,7 +48,7 @@ public class MainParser {
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
             // parse using builder to get DOM representation of the XML file
-            dom = documentBuilder.parse("util/XMLParser/mains243.xml");
+            dom = documentBuilder.parse("src/util/XMLParser/mains243.xml");
 
         } catch (ParserConfigurationException | SAXException | IOException error) {
             error.printStackTrace();

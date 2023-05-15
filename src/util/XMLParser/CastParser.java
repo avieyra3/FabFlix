@@ -43,7 +43,7 @@ public class CastParser {
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
 
             // parse using builder to get DOM representation of the XML file
-            dom = documentBuilder.parse("util/XMLParser/casts124.xml");
+            dom = documentBuilder.parse("src/util/XMLParser/casts124.xml");
 
         } catch (ParserConfigurationException | SAXException | IOException error) {
             error.printStackTrace();
