@@ -35,7 +35,7 @@ public class LoginFilter implements Filter {
         // Redirect to login page if the "user" attribute doesn't exist in session
         if (httpRequest.getSession().getAttribute("user") == null) {
             System.out.println("- not allowed without login");
-            httpResponse.sendRedirect("/s23_122b_web_dev_war/login.html");
+            httpResponse.sendRedirect("login.html");
         } else {
             System.out.println("- already logged in as user");
             // Check if this URL is allowed to access without logging in as employee
