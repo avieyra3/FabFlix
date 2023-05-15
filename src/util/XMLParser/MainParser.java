@@ -27,7 +27,7 @@ public class MainParser {
 
         // get each movie element and create a Movie object
         parseDocument();
-
+        dom = null;
         // iterate through the list and print the data
         //System.out.println(dataForMoviesTable.toString());
         //System.out.println(dataForGenresInMoviesTable.toString());

@@ -20,7 +20,7 @@ public class ActorParser {
 
         // get each movie element and create a Movie object
         parseDocument();
-
+        dom = null;
         // iterate through the list and print the data
         //System.out.println(dataForStarsTable.toString());
 

@@ -3,7 +3,7 @@ import java.util.*;
 
 public class DomParser {
     public static void main(String[] args) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-
+        System.out.println("DomParser Running:");
         MainParser mainParser = new MainParser();
         mainParser.run();
         HashMap<String, ArrayList> dataForMoviesTable = mainParser.getDataForMoviesTable();
