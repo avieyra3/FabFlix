@@ -17,7 +17,7 @@ II. Project 2:
 III. Project 3:
 - Khoi: reCaptcha, HTTPS, Encrypt Password, Dashboard Login, Import XML
 - Alfonso: PreparedStatement, Dashboard and Stored Procedure
-- Demo Video URL: https://youtu.be/s2HN-vmqw8k
+- Demo Video URL: https://youtu.be/MEWugF288Rc
 - PreparedStatement files: 
   - AddMovieListServlet.java,
     AddStarServlet.java,
