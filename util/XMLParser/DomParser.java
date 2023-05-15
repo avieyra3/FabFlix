@@ -94,7 +94,7 @@ public class DomParser {
             int moviesNoTitle = 0;
             int moviesDuplicate = 0;
             for (Map.Entry<String, ArrayList> row : dataForMoviesTable.entrySet()) {
-                String id = "ntt" + String.format("%07d", idTail);
+                String id = "bb" + String.format("%08d", idTail);
                 String movieTitle = row.getKey();
                 Integer year = (Integer) row.getValue().get(0);
                 String director = (String) row.getValue().get(1);
@@ -143,7 +143,7 @@ public class DomParser {
             int starsNoName = 0;
             int starsDuplicate = 0;
             for (Map.Entry<String, Integer> row : dataForStarsTable.entrySet()) {
-                String id = "nnm" + String.format("%07d", idTail);
+                String id = "aa" + String.format("%08d", idTail);
                 String starName = row.getKey();
                 Integer starBirthYear = row.getValue();
                 if (starName != null && !starNamesFromDB.containsKey(starName)) {
