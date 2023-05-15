@@ -16,7 +16,7 @@ BEGIN
 	SELECT max(id) INTO starTwoChar FROM stars;
     -- if table is empty otherwise proceed --
     IF starTwoChar IS NULL THEN
-		SET starId = 'nm0000000';
+		SET starTwoChar = 'nm0000000';
 	ELSE
     -- Increment the maximum numeric part to get the next id and add it to twochar
 		SET starIdInt = CAST(SUBSTRING(starTwoChar, 3) AS UNSIGNED) + 1;
@@ -24,7 +24,7 @@ BEGIN
 	END IF;
     
     SET starId = CONCAT(starTwoChar, starIdInt);
-		-- Insert the new star into the table --
+	-- Insert the new star into the table --
 	INSERT INTO stars(id, name, birthyear)
 	VALUES (starId, starName, starBirthYear);
 	SELECT starId;
