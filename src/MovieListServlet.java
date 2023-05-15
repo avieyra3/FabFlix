@@ -38,7 +38,7 @@ public class MovieListServlet extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        System.out.println("MovieList doGet EXECUTING");
+        System.out.println("\n-------MovieList doGet EXECUTING");
         response.setContentType("application/json");
         System.out.println("request query: " + request.getQueryString());
         String requestType = request.getParameter("request-type");
@@ -81,13 +81,13 @@ public class MovieListServlet extends HttpServlet {
 
             // check which parameters are not empty and save inside a session
             if (!title.isEmpty())
-                queryAmendConditions += "AND title LIKE ?";
+                queryAmendConditions += "AND title LIKE ? ";
             if (!year.isEmpty())
-                queryAmendConditions += "AND year = ?";
+                queryAmendConditions += "AND year = ? ";
             if (!director.isEmpty())
-                queryAmendConditions += "AND director LIKE ?";
+                queryAmendConditions += "AND director LIKE ? ";
             if (!starName.isEmpty())
-                queryAmendConditions += "AND star LIKE ?";
+                queryAmendConditions += "AND s.name LIKE ? ";
 
         } else if (requestType.split("=")[0].equals("genre")) {
             // Set the session request type as genre
@@ -117,7 +117,7 @@ public class MovieListServlet extends HttpServlet {
             session.setAttribute("prefix", prefix + '%');
         }
         PrintWriter out = response.getWriter();
-        System.out.println("query: " + query);
+        //System.out.println("query: " + query);
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("MovieList Connection established!\n");
             Statement statement = connection.createStatement();
@@ -144,7 +144,7 @@ public class MovieListServlet extends HttpServlet {
                 String queryHistory = (String) session.getAttribute("queryHistory");
                 sortBy = (String) session.getAttribute("sortBy");
                 query = queryHistory + sortBy + " LIMIT ? OFFSET ?";
-                System.out.println("next query: " + query);
+                //System.out.println("next query: " + query);
 
             } else if (requestType.equals("prev")) {
                 session.setAttribute("sub-request", "prev");
@@ -160,7 +160,7 @@ public class MovieListServlet extends HttpServlet {
                 String queryHistory = (String) session.getAttribute("queryHistory");
                 sortBy = (String) session.getAttribute("sortBy");
                 query = queryHistory + sortBy + " LIMIT ? OFFSET ? ";
-                System.out.println("\nprev query: " + query + "\n");
+                //System.out.println("\nprev query: " + query + "\n");
 
             } else if (requestType.equals("sort")) {
                 // if request type is sort, then use the pre-existing sql query and set sub-request to sort
@@ -182,7 +182,7 @@ public class MovieListServlet extends HttpServlet {
                 // fetch the previous sql query using session
                 String queryHistory = (String) session.getAttribute("queryHistory");
                 query = queryHistory + sortBy + " LIMIT ? OFFSET ?";
-                System.out.println("\nquery with sort: " + query + "\n");
+                //System.out.println("\nquery with sort: " + query + "\n");
 
             } else if (requestType.split("=")[0].equals("restore")) {
 
@@ -213,7 +213,7 @@ public class MovieListServlet extends HttpServlet {
                 // set it in the session
                 session.setAttribute("queryHistory", queryHistory);
                 // print out to debug
-                System.out.println("queryHistory: " + queryHistory);
+                //System.out.println("queryHistory: " + queryHistory);
 
                 // add default sort and page number
                 query += " ORDER BY title ASC, rating ASC LIMIT 10;";
@@ -227,7 +227,7 @@ public class MovieListServlet extends HttpServlet {
             //sets value for the placeholders for execution
             updateStatement(preparedQuery, session);
             ResultSet result = preparedQuery.executeQuery();
-            System.out.println("result statement: " + result);
+            //System.out.println("\nResult statement: " + result + "\n");
 
             JsonArray jsonArray = new JsonArray();
             Integer totalResults = 0;
@@ -243,9 +243,9 @@ public class MovieListServlet extends HttpServlet {
                 String movie_stars = starsNstarsID[0];
                 String movie_star_IDs = starsNstarsID[1];
 
-                System.out.println("movie id: " + movie_id + " title: " + movie_title + " year: " + movie_year +
-                        " director: " + movie_director + " rating: " + movie_rating + " genres: " + movie_genres +
-                        " stars: " + movie_stars);
+//                System.out.println("movie id: " + movie_id + " title: " + movie_title + " year: " + movie_year +
+//                        " director: " + movie_director + " rating: " + movie_rating + " genres: " + movie_genres +
+//                        " stars: " + movie_stars);
 
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("movie_id", movie_id);
@@ -257,7 +257,7 @@ public class MovieListServlet extends HttpServlet {
                 jsonObject.addProperty("movie_stars", movie_stars);
                 jsonObject.addProperty("star_id", movie_star_IDs);
                 jsonObject.addProperty("pageNumber", (Integer) session.getAttribute("pageNumber"));
-                System.out.println(jsonObject);
+                System.out.println("Response JSON Object: " + jsonObject);
                 jsonArray.add(jsonObject);
             }
             session.setAttribute("totalResults", totalResults);
@@ -273,11 +273,13 @@ public class MovieListServlet extends HttpServlet {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("ERROR:", e.getMessage());
             out.write(jsonObject.toString());
+            e.printStackTrace();
 
             response.setStatus(500);
         } finally {
             out.close();
         }
+        System.out.println("-------MovieListServlet doGet Done!\n");
     }
     protected void updateStatement(PreparedStatement statement, HttpSession session) throws SQLException{
         int paramIndex = 1;
@@ -288,7 +290,7 @@ public class MovieListServlet extends HttpServlet {
             String director = (String) session.getAttribute("director");
             String starName = (String) session.getAttribute("starName");
             String yearStr = (String) session.getAttribute("year");
-            System.out.println(title + " " + yearStr + " " + director + " " + starName);
+            System.out.println("placeholder values: " + title + " " + yearStr + " " + director + " " + starName);
             // update the placeholders
             if (!title.isEmpty())
                 statement.setString(paramIndex++, '%' + title + '%');
@@ -302,20 +304,23 @@ public class MovieListServlet extends HttpServlet {
                 statement.setString(paramIndex++, '%' + starName + '%');
         }
         if(session.getAttribute("request-type").equals("genre")) {
+            System.out.println("placeholder values: " + (String) session.getAttribute("genre"));
             statement.setString(paramIndex++, (String) session.getAttribute("genre"));
         }
         if (session.getAttribute("request-type").equals("prefix")) {
+            System.out.println("placeholder values: " + (String) session.getAttribute("prefix"));
             statement.setString(paramIndex++, (String) session.getAttribute("prefix"));
         }
         // check if there was a sub request
         String subRequest = (String) session.getAttribute("sub-request");
         if (subRequest.equals("next") || subRequest.equals("prev") || subRequest.equals("sort")) {
-            System.out.println("\nSub Request in prog....\n");
+            //System.out.println("\nSub Request in prog....\n");
             int psize = (Integer) session.getAttribute("pageSize");
             int pnum = (Integer) session.getAttribute("pageNumber");
             int offset = psize * pnum;
             statement.setInt(paramIndex++, psize); // LIMIT
             statement.setInt(paramIndex++, offset); // OFFSET
+            System.out.println("placeholder values: " + psize + " " + offset);
 
         }
     }
@@ -334,7 +339,7 @@ public class MovieListServlet extends HttpServlet {
         }
         resultGenres.close();
         statementGenres.close();
-        return movie_genres.substring(0, movie_genres.length() - 2);
+        return movie_genres.substring(0, Math.max(0, movie_genres.length() - 2));
     }
 
     protected String[] concatStarsNId(Connection connection, String movie_Id)
@@ -355,8 +360,8 @@ public class MovieListServlet extends HttpServlet {
             movie_stars += resultStars.getString("name") + ", ";
             movie_star_IDs += resultStars.getString("id") + ", ";
         }
-        strArr[0] = movie_stars.substring(0, movie_stars.length() - 2);
-        strArr[1] = movie_star_IDs.substring(0, movie_star_IDs.length() - 2);
+        strArr[0] = movie_stars.substring(0, Math.max(0, movie_stars.length() - 2));
+        strArr[1] = movie_star_IDs.substring(0, Math.max(0, movie_star_IDs.length() - 2));
         resultStars.close();
         statementStars.close();
         return strArr;
