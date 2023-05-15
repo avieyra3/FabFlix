@@ -3,6 +3,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.sql.PreparedStatement
 
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
@@ -28,17 +29,17 @@ public class UpdateSecurePasswordCustomers {
 
         Class.forName("com.mysql.jdbc.Driver").newInstance();
         Connection connection = DriverManager.getConnection(loginUrl, loginUser, loginPasswd);
-        Statement statement = connection.createStatement();
 
         // change the customers table password column from VARCHAR(20) to VARCHAR(128)
         String alterQuery = "ALTER TABLE customers MODIFY COLUMN password VARCHAR(128)";
-        int alterResult = statement.executeUpdate(alterQuery);
+        PreparedStatement statement = connection.prepareStatement(alterQuery);
+        int alterResult = statement.executeUpdate();
         System.out.println("altering customers table schema completed, " + alterResult + " rows affected");
 
         // get the ID and password for each customer
         String query = "SELECT id, password from customers";
-
-        ResultSet rs = statement.executeQuery(query);
+        PreparedStatement newStatement = connection.prepareStatement(query);
+        ResultSet rs = newStatement.executeQuery();
 
         // we use the StrongPasswordEncryptor from jasypt library (Java Simplified Encryption) 
         //  it internally use SHA-256 algorithm and 10,000 iterations to calculate the encrypted password
@@ -66,12 +67,15 @@ public class UpdateSecurePasswordCustomers {
         System.out.println("updating password");
         int count = 0;
         for (String updateQuery : updateQueryList) {
-            int updateResult = statement.executeUpdate(updateQuery);
+            PreparedStatement updateQueryStatement = connection.prepareStatement(updateQuery);
+            int updateResult = updateQueryStatement.executeUpdate();
             count += updateResult;
+            updateQueryStatement.close();
         }
         System.out.println("updating password completed, " + count + " rows affected");
 
         statement.close();
+        newStatement.close();
         connection.close();
 
         System.out.println("finished");
