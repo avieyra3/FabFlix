@@ -1,0 +1,97 @@
+* {
+    font-family: 'Playfair Display', Serif;
+}
+body {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+}
+/* sets the height of the header and color*/
+header {
+    background-color: darkslategray;
+    color: white;
+    display: flex;
+    align-items: center;
+    height: 60px;
+    padding: 20px;
+}
+
+.logo-header{
+    color: white;
+    font-weight: bold;
+    font-size: xxx-large;
+}
+
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+/*provides space in between each hyperlink*/
+nav li {
+    margin-right: 10px;
+}
+/*sets color of hyperlinks to white*/
+li a {
+    color: white;
+}
+
+#metadata {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+.table {
+    width: 1500px;
+    margin: 0 auto;
+    color: black;
+    border-radius: 25px;
+    table-layout: fixed;
+}
+/* sets background of the headers row block and the font white*/
+thead tr {
+    background-color: #000000;
+    font-size: x-large;
+}
+
+th {
+    border: 1px solid #fff;
+    padding: 8px;
+    color: white;
+    text-align: center;
+}
+tbody {
+    color: black;
+    background-color: lightgrey;
+}
+tbody th {
+    color: black;
+}
+
+table.meta_table th,
+table.meta_table td {
+    width: 50%; /* adjust this value as needed */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+h2.meta_header {
+    font-size: xxx-large;
+    font-weight: bold;
+    padding: 25px;
+}

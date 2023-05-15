@@ -58,13 +58,15 @@ public class PurchaseConfirmServlet extends HttpServlet {
 
             for (int saleID : previousSales) {
                 //Add sales data from session's cache to the JSON response
-                System.out.println("saleID: " + saleID);
-                Statement statementSaleData = connection.createStatement();
                 String querySalesData = "SELECT sales.id as saleId, movieId, title, count\n" +
                         "FROM sales, movies\n" +
-                        "WHERE sales.movieId = movies.id AND sales.id = '" + saleID + "';\n";
+                        "WHERE sales.movieId = movies.id AND sales.id = ?;\n";
                 System.out.println(querySalesData);
-                ResultSet resultSalesData = statementSaleData.executeQuery(querySalesData);
+
+                PreparedStatement statementSaleData = connection.prepareStatement(querySalesData);
+                statementSaleData.setInt(1, saleID);
+                ResultSet resultSalesData = statementSaleData.executeQuery();
+
                 while (resultSalesData.next()) {
                     String movieTitle = resultSalesData.getString("title");
                     String movieID = resultSalesData.getString("movieId");

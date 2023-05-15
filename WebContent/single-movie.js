@@ -37,7 +37,7 @@
  */
 
 function handleResult(resultData) {
-
+    console.log(resultData);
     // Populate the star table
     // Find the empty table body by id "movie_table_body"
     let movieTableBodyElement = jQuery("#movie_table_body");

@@ -40,10 +40,9 @@ public class BrowseGenreServlet extends HttpServlet {
 
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("BrowseServlet Connection established!\n");
-            Statement statement = connection.createStatement();
             String query = "SELECT DISTINCT name FROM genres";
-
-            ResultSet result = statement.executeQuery(query);
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet result = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
 
