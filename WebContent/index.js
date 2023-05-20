@@ -10,7 +10,6 @@
  *
  */
 
-
 /*
  * This function is called by the library when it needs to lookup a query.
  *
@@ -75,7 +74,9 @@ function handleLookupAjaxSuccess(data, query, doneCallback) {
 function handleSelectSuggestion(suggestion) {
     // TODO: jump to the specific result page based on the selected suggestion
 
-    console.log("you select " + suggestion["value"] + " with ID " + suggestion["data"]["heroID"])
+    console.log("you select " + suggestion["value"] + " with ID " + suggestion["data"]["movieId"])
+    //redirect to the single movie with the corresponding movie id.
+    window.location = "single-movie.html?id=" + suggestion["data"]["movieId"];
 }
 
 
@@ -111,6 +112,7 @@ $('#autocomplete').autocomplete({
 function handleNormalSearch(query) {
     console.log("doing normal search with query: " + query);
     // TODO: you should do normal search here
+    window.location = "movie-list.html?request-type=search&title=" + query + "&year=&director=&star=";
 }
 
 // bind pressing enter key to a handler function
