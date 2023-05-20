@@ -10,6 +10,10 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- jQuery is required -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!-- include jquery autocomplete JS  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.11/jquery.autocomplete.min.js"></script>
     <link rel="stylesheet" href="./css/styles-single-movie.css">
     <title>Movie</title>
 </head>
@@ -27,6 +31,11 @@
                 <li><a href="movie-list.html?request-type=restore=session">Back to Movie List</a></li>
                 <li><a href="shopping-cart.html">Checkout</a></li>
             </ul>
+            <div class="full-text-container">
+                <input type="text" name="hero" id="autocomplete"
+                       class="autocomplete-searchbox form-control"
+                       placeholder="Search Movies"/>
+            </div>
         </nav>
     </header>
 
@@ -60,10 +69,10 @@
         </div>
     </div>
     <!-- Load jQuery and Bootstrap JS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
     <script src="single-movie.js"></script>
+    <script type='text/javascript' src='index.js'></script>
 
     <footer>
         <h3 class="footer-head">Social Media:</h3>

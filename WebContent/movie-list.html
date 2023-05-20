@@ -34,43 +34,43 @@
                 <li><a href="#">Contact</a></li>
                 <li><a href="shopping-cart.html">Checkout</a></li>
             </ul>
+            <h1 class="list-header">Movie List</h1>
+            <div class="full-text-container">
+                <input type="text" name="hero" id="autocomplete"
+                       class="autocomplete-searchbox form-control"
+                       placeholder="Search Movies"/>
+            </div>
+            <div class="container-sort">
+                <form class="sort-container" ACTION="movie-list.html" id="sorting" METHOD="GET">
+                    <input TYPE="hidden" NAME="request-type" VALUE="sort">
+                    <div class="moviespp">
+                        Movies Per Page:
+                    </div>
+                    <select class="pagesize-select" NAME="page-size">
+                        <option VALUE="10">10</option>
+                        <option VALUE="25">25</option>
+                        <option VALUE="50">50</option>
+                        <option VALUE="100">100</option>
+                    </select>
+                    <div class="order-by">
+                        Sort By:
+                    </div>
+                    <select class="sort-select" NAME="sort-by">
+                        <option VALUE="ORDER BY title ASC, rating ASC">Title↑ Rating↑</option>
+                        <option VALUE="ORDER BY title ASC, rating DESC">Title↑ Rating↓</option>
+                        <option VALUE="ORDER BY title DESC, rating ASC">Title↓ Rating↑</option>
+                        <option VALUE="ORDER BY title DESC, rating DESC">Title↓ Rating↓</option>
+                        <option VALUE="ORDER BY rating ASC, title ASC">Rating↑ Title↑</option>
+                        <option VALUE="ORDER BY rating ASC, title DESC">Rating↑ Title↓</option>
+                        <option VALUE="ORDER BY rating DESC, title ASC">Rating↓ Title↑</option>
+                        <option VALUE="ORDER BY rating DESC, title DESC">Rating↓ Title↓</option>
+                    </select>
+                    <input class="sort-submit" TYPE="submit" VALUE="Sort">
+                </form>
+            </div>
         </nav>
-        <h1 class="list-header">Movie List</h1>
 
-        <div class="container-sort">
-        <form class="sort-container" ACTION="movie-list.html" id="sorting" METHOD="GET">
-            <input TYPE="hidden" NAME="request-type" VALUE="sort">
-            <div class="moviespp">
-                Movies Per Page:
-            </div>
-                <select class="pagesize-select" NAME="page-size">
-                <option VALUE="10">10</option>
-                <option VALUE="25">25</option>
-                <option VALUE="50">50</option>
-                <option VALUE="100">100</option>
-                </select>
-            <div class="order-by">
-                Sort By:
-            </div>
-        <select class="sort-select" NAME="sort-by">
-            <option VALUE="ORDER BY title ASC, rating ASC">Title↑ Rating↑</option>
-            <option VALUE="ORDER BY title ASC, rating DESC">Title↑ Rating↓</option>
-            <option VALUE="ORDER BY title DESC, rating ASC">Title↓ Rating↑</option>
-            <option VALUE="ORDER BY title DESC, rating DESC">Title↓ Rating↓</option>
-            <option VALUE="ORDER BY rating ASC, title ASC">Rating↑ Title↑</option>
-            <option VALUE="ORDER BY rating ASC, title DESC">Rating↑ Title↓</option>
-            <option VALUE="ORDER BY rating DESC, title ASC">Rating↓ Title↑</option>
-            <option VALUE="ORDER BY rating DESC, title DESC">Rating↓ Title↓</option>
-        </select>
-            <input class="sort-submit" TYPE="submit" VALUE="Sort">
-        </form>
-        </div>
 
-        <div class="full-text-container">
-            <input type="text" name="hero" id="autocomplete"
-                   class="autocomplete-searchbox form-control"
-                   placeholder="Search Movies"/>
-        </div>
     </header>
 
     <div class="search-form">
@@ -116,9 +116,9 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
     <script src="movie-list.js"></script>
     <script type='text/javascript' src='index.js'></script>
+
     <footer>
         <h3 class="footer-head">Social Media:</h3>
         <div class="social-media">
