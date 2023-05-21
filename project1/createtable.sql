@@ -82,3 +82,4 @@ CREATE TABLE IF NOT EXISTS employees (
 	fullname VARCHAR(100)
 );
 
+ALTER TABLE movies ADD FULLTEXT(title);
