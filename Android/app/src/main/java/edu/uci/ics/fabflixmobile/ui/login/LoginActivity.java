@@ -14,6 +14,10 @@ import com.android.volley.toolbox.StringRequest;
 import edu.uci.ics.fabflixmobile.data.NetworkManager;
 import edu.uci.ics.fabflixmobile.databinding.ActivityLoginBinding;
 import edu.uci.ics.fabflixmobile.ui.movielist.MovieListActivity;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -66,13 +70,28 @@ public class LoginActivity extends AppCompatActivity {
                 response -> {
                     // TODO: should parse the json response to redirect to appropriate functions
                     //  upon different response value.
-                    Log.d("login.success", response);
-                    //Complete and destroy login activity once successful
-                    finish();
-                    // initialize the activity(page)/destination
-                    Intent MovieListPage = new Intent(LoginActivity.this, MovieListActivity.class);
-                    // activate the list page.
-                    startActivity(MovieListPage);
+                    Log.d("login.json", response);
+                    try {
+                        JSONObject resultData = new JSONObject(response);
+                        String status = (String) resultData.get("status");
+                        String msg = (String) resultData.get("message");
+                        if (status.equals("success")) {
+                            Log.d("login.success", "");
+                            //Complete and destroy login activity once successful
+                            finish();
+                            // initialize the activity(page)/destination
+                            Intent MovieListPage = new Intent(LoginActivity.this, MovieListActivity.class);
+                            // activate the list page.
+                            startActivity(MovieListPage);
+                        } else {
+                            message.setText(msg);
+                        }
+                    } catch (JSONException e) {
+                        Log.d("JSON parsing failed", e.getStackTrace().toString());
+                    }
+
+
+
                 },
                 error -> {
                     // error
