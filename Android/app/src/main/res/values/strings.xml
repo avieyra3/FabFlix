@@ -13,4 +13,8 @@
     <!-- Strings related to main -->
     <string name="search_bar">Search Title</string>
     <string name="search_button">Search</string>
+    <!-- Strings related to movie list -->
+    <string name="prev">Prev</string>
+    <string name="next">Next</string>
+
 </resources>
