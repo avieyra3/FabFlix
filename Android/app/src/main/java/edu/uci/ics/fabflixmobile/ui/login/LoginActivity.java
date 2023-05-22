@@ -13,7 +13,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import edu.uci.ics.fabflixmobile.data.NetworkManager;
 import edu.uci.ics.fabflixmobile.databinding.ActivityLoginBinding;
-import edu.uci.ics.fabflixmobile.ui.movielist.MovieListActivity;
+import edu.uci.ics.fabflixmobile.ui.mainpage.MainActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,11 +31,6 @@ public class LoginActivity extends AppCompatActivity {
       In Android, localhost is the address of the device or the emulator.
       To connect to your machine, you need to use the below IP address
      */
-//    private final String host = "10.0.2.2";
-//    private final String port = "8080";
-//    private final String domain = "cs122b_project2_login_cart_example_war";
-//    private final String baseURL = "http://" + host + ":" + port + "/" + domain;
-
     private final String host = "10.0.2.2";
     private final String port = "8443";
     private final String domain = "s23_122b_web_dev_war";
@@ -80,18 +75,15 @@ public class LoginActivity extends AppCompatActivity {
                             //Complete and destroy login activity once successful
                             finish();
                             // initialize the activity(page)/destination
-                            Intent MovieListPage = new Intent(LoginActivity.this, MovieListActivity.class);
-                            // activate the list page.
-                            startActivity(MovieListPage);
+                            Intent MainPage = new Intent(LoginActivity.this, MainActivity.class);
+                            // activate the main page.
+                            startActivity(MainPage);
                         } else {
                             message.setText(msg);
                         }
                     } catch (JSONException e) {
                         Log.d("JSON parsing failed", e.getStackTrace().toString());
                     }
-
-
-
                 },
                 error -> {
                     // error
