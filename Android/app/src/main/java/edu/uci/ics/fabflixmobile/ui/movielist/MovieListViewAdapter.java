@@ -20,6 +20,9 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
     private static class ViewHolder {
         TextView title;
         TextView subtitle;
+        TextView stars;
+        TextView director;
+        TextView rating;
     }
 
     public MovieListViewAdapter(Context context, ArrayList<Movie> movies) {
@@ -41,6 +44,9 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
             convertView = inflater.inflate(R.layout.movielist_row, parent, false);
             viewHolder.title = convertView.findViewById(R.id.title);
             viewHolder.subtitle = convertView.findViewById(R.id.subtitle);
+            viewHolder.stars = convertView.findViewById(R.id.stars);
+            viewHolder.director = convertView.findViewById(R.id.director);
+            viewHolder.rating = convertView.findViewById(R.id.rating);
             // Cache the viewHolder object inside the fresh view
             convertView.setTag(viewHolder);
         } else {
@@ -50,7 +56,11 @@ public class MovieListViewAdapter extends ArrayAdapter<Movie> {
         // Populate the data from the data object via the viewHolder object
         // into the template view.
         viewHolder.title.setText(movie.getName());
-        viewHolder.subtitle.setText(movie.getYear() + "");
+        viewHolder.subtitle.setText(movie.getYear() + " · " + movie.getGenres());
+        viewHolder.stars.setText(movie.getStars());
+        viewHolder.director.setText("Directed by " + movie.getDirector());
+        viewHolder.rating.setText("Rating: " + movie.getRating());
+
         // Return the completed view to render on screen
         return convertView;
     }

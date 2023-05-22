@@ -20,6 +20,7 @@ import edu.uci.ics.fabflixmobile.ui.login.LoginActivity;
 import edu.uci.ics.fabflixmobile.ui.mainpage.MainActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,12 +37,12 @@ public class MovieListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //Get params from MainActivity
-        String title = "";
+        String ftTitle = "";
         Bundle param = getIntent().getExtras();
         if (param != null) {
-            title = param.getString("title");
+            ftTitle = param.getString("title");
         }
-        Log.d("movielist.search.title", title);
+        Log.d("movielist.search.title", ftTitle);
 
         setContentView(R.layout.activity_movielist);
 
@@ -50,14 +51,40 @@ public class MovieListActivity extends AppCompatActivity {
         // request type is GET
         final StringRequest searchRequest = new StringRequest(
                 Request.Method.GET,
-                baseURL + "/api/movielist?request-type=search&title=" + title + "&year=&director=&star=",
+                baseURL + "/api/movielist?request-type=search&title=" + ftTitle + "&year=&director=&star=",
                 response -> {
                     // TODO: should parse the json response to redirect to appropriate functions
                     //  upon different response value.
                     Log.d("movielist.json", response);
                     try {
-                        JSONObject resultData = new JSONObject(response);
+                        JSONArray resultData = new JSONArray(response);
 //                        String status = (String) resultData.get("status");
+
+                        final ArrayList<Movie> movies = new ArrayList<>();
+                        for (int i = 0; i < resultData.length(); i++) {
+                            JSONObject jsonObject = (JSONObject) resultData.get(i);
+                            String id = (String) jsonObject.get("movie_id");
+                            String title = (String) jsonObject.get("movie_title");
+                            int year =  jsonObject.getInt("movie_year");
+                            String director = (String) jsonObject.get("movie_director");
+                            String rating = (String) jsonObject.get("movie_rating");
+                            String genres = (String) jsonObject.get("movie_genres");
+                            String stars = (String) jsonObject.get("movie_stars");
+                            movies.add(new Movie(id, title, (short) year, director, rating, genres, stars));
+                        }
+                        MovieListViewAdapter adapter = new MovieListViewAdapter(this, movies);
+                        ListView listView = findViewById(R.id.list);
+                        listView.setAdapter(adapter);
+                        listView.setOnItemClickListener((parent, view, position, id) -> {
+                            Movie movie = movies.get(position);
+                            @SuppressLint("DefaultLocale") String message = String.format(
+                                    "Clicked on position: %d, name: %s, %d",
+                                    position,
+                                    movie.getName(),
+                                    movie.getYear()
+                            );
+                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                        });
                     } catch (JSONException e) {
                         Log.d("JSON parsing failed", e.getStackTrace().toString());
                     }
@@ -68,19 +95,5 @@ public class MovieListActivity extends AppCompatActivity {
                 });
         // important: queue.add is where the login request is actually sent
         queue.add(searchRequest);
-
-
-
-        final ArrayList<Movie> movies = new ArrayList<>();
-        movies.add(new Movie("The Terminal", (short) 2004));
-        movies.add(new Movie("The Final Season", (short) 2007));
-        MovieListViewAdapter adapter = new MovieListViewAdapter(this, movies);
-        ListView listView = findViewById(R.id.list);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            Movie movie = movies.get(position);
-            @SuppressLint("DefaultLocale") String message = String.format("Clicked on position: %d, name: %s, %d", position, movie.getName(), movie.getYear());
-            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-        });
     }
 }
