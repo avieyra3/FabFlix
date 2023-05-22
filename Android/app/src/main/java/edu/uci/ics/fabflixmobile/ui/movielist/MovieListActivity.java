@@ -18,6 +18,7 @@ import edu.uci.ics.fabflixmobile.data.NetworkManager;
 import edu.uci.ics.fabflixmobile.data.model.Movie;
 import edu.uci.ics.fabflixmobile.ui.login.LoginActivity;
 import edu.uci.ics.fabflixmobile.ui.mainpage.MainActivity;
+import edu.uci.ics.fabflixmobile.ui.singlemovie.SingleMovieActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
@@ -58,7 +59,6 @@ public class MovieListActivity extends AppCompatActivity {
                     Log.d("movielist.json", response);
                     try {
                         JSONArray resultData = new JSONArray(response);
-//                        String status = (String) resultData.get("status");
 
                         final ArrayList<Movie> movies = new ArrayList<>();
                         for (int i = 0; i < resultData.length(); i++) {
@@ -84,6 +84,9 @@ public class MovieListActivity extends AppCompatActivity {
                                     movie.getYear()
                             );
                             Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                            Intent SingleMoviePage = new Intent(MovieListActivity.this, SingleMovieActivity.class);
+                            SingleMoviePage.putExtra("id", movie.getId());
+                            startActivity(SingleMoviePage);
                         });
                     } catch (JSONException e) {
                         Log.d("JSON parsing failed", e.getStackTrace().toString());
