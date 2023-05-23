@@ -77,8 +77,8 @@ public class SingleMovieActivity extends AppCompatActivity {
                         year.setText( (String) jsonObject.get("movie_year"));
                         director.setText( (String) jsonObject.get("movie_director"));
                         rating.setText( (String) jsonObject.get("movie_rating"));
-                        genres.setText( (String) jsonObject.get("movie_genres"));
-                        stars.setText( (String) jsonObject.get("movie_stars"));
+                        genres.setText(( (String) jsonObject.get("movie_genres")).replace("|", ", "));
+                        stars.setText(( (String) jsonObject.get("movie_stars")).replace("|", ", "));
 
                     } catch (JSONException e) {
                         Log.d("JSON parsing failed", e.getStackTrace().toString());

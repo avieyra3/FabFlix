@@ -60,40 +60,55 @@ public class MovieListActivity extends AppCompatActivity {
                     // TODO: should parse the json response to redirect to appropriate functions
                     //  upon different response value.
                     Log.d("movielist.titleRequest.json", response);
-                    try {
-                        JSONArray resultData = new JSONArray(response);
 
-                        final ArrayList<Movie> movies = new ArrayList<>();
-                        for (int i = 0; i < resultData.length(); i++) {
-                            JSONObject jsonObject = (JSONObject) resultData.get(i);
-                            String id = (String) jsonObject.get("movie_id");
-                            String title = (String) jsonObject.get("movie_title");
-                            int year =  jsonObject.getInt("movie_year");
-                            String director = (String) jsonObject.get("movie_director");
-                            String rating = (String) jsonObject.get("movie_rating");
-                            String genres = (String) jsonObject.get("movie_genres");
-                            String stars = (String) jsonObject.get("movie_stars");
-                            movies.add(new Movie(id, title, (short) year, director, rating, genres, stars));
-                        }
-                        MovieListViewAdapter adapter = new MovieListViewAdapter(this, movies);
-                        ListView listView = findViewById(R.id.list);
-                        listView.setAdapter(adapter);
-                        listView.setOnItemClickListener((parent, view, position, id) -> {
-                            Movie movie = movies.get(position);
-                            @SuppressLint("DefaultLocale") String message = String.format(
-                                    "Clicked on position: %d, name: %s, %d",
-                                    position,
-                                    movie.getName(),
-                                    movie.getYear()
-                            );
-                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                            Intent SingleMoviePage = new Intent(MovieListActivity.this, SingleMovieActivity.class);
-                            SingleMoviePage.putExtra("id", movie.getId());
-                            startActivity(SingleMoviePage);
-                        });
-                    } catch (JSONException e) {
-                        Log.d("JSON parsing failed", e.getStackTrace().toString());
-                    }
+                    final StringRequest pageLimitRequest = new StringRequest(
+                            Request.Method.GET,
+                            baseURL + "/api/movielist?request-type=sort&page-size=20",
+                            responseUpdated -> {
+                                // TODO: should parse the json response to redirect to appropriate functions
+                                //  upon different response value.
+                                Log.d("movielist.pageLimitRequest.json", responseUpdated);
+                                try {
+                                    JSONArray resultData = new JSONArray(responseUpdated);
+
+                                    final ArrayList<Movie> movies = new ArrayList<>();
+                                    for (int i = 0; i < resultData.length(); i++) {
+                                        JSONObject jsonObject = (JSONObject) resultData.get(i);
+                                        String id = (String) jsonObject.get("movie_id");
+                                        String title = (String) jsonObject.get("movie_title");
+                                        int year =  jsonObject.getInt("movie_year");
+                                        String director = (String) jsonObject.get("movie_director");
+                                        String rating = (String) jsonObject.get("movie_rating");
+                                        String genres = (String) jsonObject.get("movie_genres");
+                                        String stars = (String) jsonObject.get("movie_stars");
+                                        movies.add(new Movie(id, title, (short) year, director, rating, genres, stars));
+                                    }
+                                    MovieListViewAdapter adapter = new MovieListViewAdapter(this, movies);
+                                    ListView listView = findViewById(R.id.list);
+                                    listView.setAdapter(adapter);
+                                    listView.setOnItemClickListener((parent, view, position, id) -> {
+                                        Movie movie = movies.get(position);
+                                        @SuppressLint("DefaultLocale") String message = String.format(
+                                                "Clicked on position: %d, name: %s, %d",
+                                                position,
+                                                movie.getName(),
+                                                movie.getYear()
+                                        );
+                                        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                                        Intent SingleMoviePage = new Intent(MovieListActivity.this, SingleMovieActivity.class);
+                                        SingleMoviePage.putExtra("id", movie.getId());
+                                        startActivity(SingleMoviePage);
+                                    });
+                                } catch (JSONException e) {
+                                    Log.d("JSON parsing failed", e.getStackTrace().toString());
+                                }
+                            },
+                            error -> {
+                                // error
+                                Log.d("movielist.pageLimitRequest.error", error.toString());
+                            });
+                    // important: queue.add is where the login request is actually sent
+                    queue.add(pageLimitRequest);
                 },
                 error -> {
                     // error
@@ -102,54 +117,7 @@ public class MovieListActivity extends AppCompatActivity {
         // important: queue.add is where the login request is actually sent
         queue.add(searchRequest);
 
-//        final StringRequest pageLimitRequest = new StringRequest(
-//                Request.Method.GET,
-//                baseURL + "/api/movielist?request-type=sort&page-size=20&sort-by=ORDER+BY+title+ASC%2C+rating+ASC",
-//                response -> {
-//                    // TODO: should parse the json response to redirect to appropriate functions
-//                    //  upon different response value.
-//                    Log.d("movielist.pageLimitRequest.json", response);
-//                    try {
-//                        JSONArray resultData = new JSONArray(response);
-//
-//                        final ArrayList<Movie> movies = new ArrayList<>();
-//                        for (int i = 0; i < resultData.length(); i++) {
-//                            JSONObject jsonObject = (JSONObject) resultData.get(i);
-//                            String id = (String) jsonObject.get("movie_id");
-//                            String title = (String) jsonObject.get("movie_title");
-//                            int year =  jsonObject.getInt("movie_year");
-//                            String director = (String) jsonObject.get("movie_director");
-//                            String rating = (String) jsonObject.get("movie_rating");
-//                            String genres = (String) jsonObject.get("movie_genres");
-//                            String stars = (String) jsonObject.get("movie_stars");
-//                            movies.add(new Movie(id, title, (short) year, director, rating, genres, stars));
-//                        }
-//                        MovieListViewAdapter adapter = new MovieListViewAdapter(this, movies);
-//                        ListView listView = findViewById(R.id.list);
-//                        listView.setAdapter(adapter);
-//                        listView.setOnItemClickListener((parent, view, position, id) -> {
-//                            Movie movie = movies.get(position);
-//                            @SuppressLint("DefaultLocale") String message = String.format(
-//                                    "Clicked on position: %d, name: %s, %d",
-//                                    position,
-//                                    movie.getName(),
-//                                    movie.getYear()
-//                            );
-//                            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-//                            Intent SingleMoviePage = new Intent(MovieListActivity.this, SingleMovieActivity.class);
-//                            SingleMoviePage.putExtra("id", movie.getId());
-//                            startActivity(SingleMoviePage);
-//                        });
-//                    } catch (JSONException e) {
-//                        Log.d("JSON parsing failed", e.getStackTrace().toString());
-//                    }
-//                },
-//                error -> {
-//                    // error
-//                    Log.d("movielist.pageLimitRequest.error", error.toString());
-//                });
-//        // important: queue.add is where the login request is actually sent
-//        queue.add(pageLimitRequest);
+
 
         ActivityMovielistBinding binding = ActivityMovielistBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

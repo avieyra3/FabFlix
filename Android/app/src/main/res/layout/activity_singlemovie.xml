@@ -14,8 +14,11 @@
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:textColor="@android:color/black"
-            android:textSize="25sp"
+            android:textStyle="bold"
+            android:textSize="30sp"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -24,45 +27,109 @@
             android:id="@+id/year"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
+            android:textColor="@color/purple_700"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/title" />
+
+    <TextView
+            android:id="@+id/directortext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:textColor="@color/purple_700"
+            android:text="Directed by"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/year"/>
 
     <TextView
             android:id="@+id/director"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/black"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/year"/>
+            app:layout_constraintTop_toBottomOf="@+id/directortext"/>
+
+    <TextView
+            android:id="@+id/genrestext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:textColor="@color/purple_700"
+            android:text="Genres:"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/director"/>
+
 
     <TextView
             android:id="@+id/genres"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/black"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/director"/>
+            app:layout_constraintTop_toBottomOf="@+id/genrestext"/>
+
+    <TextView
+            android:id="@+id/starstext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:textColor="@color/purple_700"
+            android:text="Stars:"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/genres"/>
+
 
     <TextView
             android:id="@+id/stars"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/black"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/genres"/>
+            app:layout_constraintTop_toBottomOf="@+id/starstext"/>
+
+    <TextView
+            android:id="@+id/ratingtext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:textColor="@color/purple_700"
+            android:text="Rating:"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/stars"/>
+
 
     <TextView
             android:id="@+id/rating"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@android:color/black"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/stars"/>
+            app:layout_constraintTop_toBottomOf="@+id/ratingtext"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
