@@ -1,7 +1,14 @@
 * {
     font-family: 'Playfair Display', Serif;
 }
-
+body {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f2f2f2;
+}
 /* sets the height of the header and color*/
 header {
     background-color: darkslategray;
@@ -18,16 +25,10 @@ header {
     font-size: xxx-large;
 }
 .login-header {
+    text-align: center;
     font-weight: bold;
     font-size: xxx-large;
-    margin-left: 425px;
-}
-body {
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    margin: 0;
+    margin-left: 875px;
 }
 
 input[type=text], select {
