@@ -115,109 +115,135 @@ public class MovieListServlet extends HttpServlet {
             // have to set the wildcard here because of the * condition otherwise,
             // would need to check it in the update
             session.setAttribute("prefix", prefix + '%');
+
+        } else if (requestType.split("=")[0].equals("fts")) {
+            // set up session attributes
+            String ftsQuery = requestType.split("=")[1];
+            String[] tokenQueryArr = ftsQuery.split("\\s+");
+            String likeStr = '%' + ftsQuery + '%';
+            String ftStr = "";
+            int threshold = (int)Math.round(ftsQuery.length() * 0.30);
+            String tokens = "Tokens: ";
+            for (int i = 0; i < tokenQueryArr.length; i++) {
+                tokens += tokenQueryArr[i] + " ";
+                ftStr += "+" + tokenQueryArr[i] + "* ";
+            }
+
+            // store session data
+            session.setAttribute("request-type", "fts");
+            session.setAttribute("fuzzy", ftsQuery);
+            session.setAttribute("likeStr", likeStr);
+            session.setAttribute("threshold", threshold);
+            session.setAttribute("ftStr", ftStr);
+            // assign query to fts with fuzzy search.
+            queryAmendConditions += "AND title LIKE ? OR edth(title, ?, ?) UNION " + querySelectClause +
+                    "WHERE MATCH(title) AGAINST ( ? IN BOOLEAN MODE) ";
+        }
+        // -----------------------------------------------------------------------------------------------------
+        // The next set of if statements are actually checking the "sub" request type. So a new chain of if-else
+        // starts here verifying whether we need to "add" to the previous query or apply the default setting.
+        // -----------------------------------------------------------------------------------------------------
+        if (requestType.equals("next")) {
+            // set sub request as next
+            session.setAttribute("sub-request", "next");
+            // We get the sessions data and reconstruct the query to incorporate the offset (new page)
+            pageNumber = (Integer) session.getAttribute("pageNumber");
+            pageSize = (Integer) session.getAttribute("pageSize");
+
+            // edge case: make sure that the user cannot exceed the max page size. For example, we do not
+            // add a page if the number of results in the previous query was less than 10. Of course,
+            // we do need to watch out for the case where totalResults is at 10 which this doesnt solve for.
+            Integer totalResults = (Integer) session.getAttribute("totalResults"); // gets the total results
+            if (totalResults < pageSize) {
+                ;
+            } else {
+                pageNumber += 1;
+            }
+            session.setAttribute("pageNumber", pageNumber);
+
+            // fetch the previous sql query session and sort parameters
+            String queryHistory = (String) session.getAttribute("queryHistory");
+            sortBy = (String) session.getAttribute("sortBy");
+            query = queryHistory + sortBy + " LIMIT ? OFFSET ?";
+            //System.out.println("next query: " + query);
+
+        } else if (requestType.equals("prev")) {
+            session.setAttribute("sub-request", "prev");
+            pageNumber = (Integer) session.getAttribute("pageNumber");
+            // edge case: we cannot have a page less than zero.
+            pageNumber -= 1;
+            if (pageNumber < 0) {
+                pageNumber = 0;
+            }
+            session.setAttribute("pageNumber", pageNumber);
+
+            // fetch the previous sql query session and sort parameters
+            String queryHistory = (String) session.getAttribute("queryHistory");
+            sortBy = (String) session.getAttribute("sortBy");
+            query = queryHistory + sortBy + " LIMIT ? OFFSET ? ";
+            //System.out.println("\nprev query: " + query + "\n");
+
+        } else if (requestType.equals("sort")) {
+            // if request type is sort, then use the pre-existing sql query and set sub-request to sort
+            // check first if the sortBy parameter is equal to any of the preset to for security measures
+            // if the sortBy variable returned does not match any of the strings in stringSet revert to
+            // default string
+            session.setAttribute("sub-request", "sort");
+            sortBy = request.getParameter("sort-by");
+            if (!stringSet.contains(sortBy)) {
+                sortBy = "ORDER BY title ASC, rating ASC";
+                session.setAttribute("sortBy", sortBy);
+
+            } else
+                session.setAttribute("sortBy", sortBy);
+
+            pageSize = Integer.parseInt(request.getParameter("page-size"));
+            session.setAttribute("pageSize", pageSize);
+
+            // fetch the previous sql query using session
+            String queryHistory = (String) session.getAttribute("queryHistory");
+            query = queryHistory + sortBy + " LIMIT ? OFFSET ?";
+            //System.out.println("\nquery with sort: " + query + "\n");
+
+        } else if (requestType.split("=")[0].equals("restore")) {
+
+            String restoreQuery = (String) session.getAttribute("restored-query");
+            // check if the user somehow went straight to a single movie page, if so, this
+            // safety net will still load a list of movies although this technically shouldn't
+            // happen.
+            if (restoreQuery != null && restoreQuery != "") {
+                query = restoreQuery;
+            }
+        } else {
+            // clear previous cached sql session since we are starting a new request-type=search/browse
+            // this means default initializing the variable data
+            String queryHistory = "";
+            sortBy = "ORDER BY title ASC, rating ASC";
+            pageSize = 10;
+            pageNumber = 0;
+            session.setAttribute("queryHistory", queryHistory);
+            session.setAttribute("pageSize", pageSize);
+            session.setAttribute("pageNumber", pageNumber);
+            session.setAttribute("sortBy", sortBy);
+            session.setAttribute("sub-request", "");
+
+            // add the search/browse portion to the query
+            query = querySelectClause + queryAmendJoins + queryAmendConditions;
+            // assigns session queryHistory string to the new query
+            queryHistory = query;
+            // set it in the session
+            session.setAttribute("queryHistory", queryHistory);
+            // print out to debug
+            //System.out.println("queryHistory: " + queryHistory);
+
+            // add default sort and page number
+            query += " ORDER BY title ASC, rating ASC LIMIT 10";
         }
         PrintWriter out = response.getWriter();
         //System.out.println("query: " + query);
         try (Connection connection = dataSource.getConnection()) {
             System.out.println("MovieList Connection established!\n");
             Statement statement = connection.createStatement();
-
-            if (requestType.equals("next")) {
-                // set sub request as next
-                session.setAttribute("sub-request", "next");
-                // We get the sessions data and reconstruct the query to incorporate the offset (new page)
-                pageNumber = (Integer) session.getAttribute("pageNumber");
-                pageSize = (Integer) session.getAttribute("pageSize");
-
-                // edge case: make sure that the user cannot exceed the max page size. For example, we do not
-                // add a page if the number of results in the previous query was less than 10. Of course,
-                // we do need to watch out for the case where totalResults is at 10 which this doesnt solve for.
-                Integer totalResults = (Integer) session.getAttribute("totalResults"); // gets the total results
-                if (totalResults < pageSize) {
-                    ;
-                } else {
-                    pageNumber += 1;
-                }
-                session.setAttribute("pageNumber", pageNumber);
-
-                // fetch the previous sql query session and sort parameters
-                String queryHistory = (String) session.getAttribute("queryHistory");
-                sortBy = (String) session.getAttribute("sortBy");
-                query = queryHistory + sortBy + " LIMIT ? OFFSET ?";
-                //System.out.println("next query: " + query);
-
-            } else if (requestType.equals("prev")) {
-                session.setAttribute("sub-request", "prev");
-                pageNumber = (Integer) session.getAttribute("pageNumber");
-                // edge case: we cannot have a page less than zero.
-                pageNumber -= 1;
-                if (pageNumber < 0) {
-                    pageNumber = 0;
-                }
-                session.setAttribute("pageNumber", pageNumber);
-
-                // fetch the previous sql query session and sort parameters
-                String queryHistory = (String) session.getAttribute("queryHistory");
-                sortBy = (String) session.getAttribute("sortBy");
-                query = queryHistory + sortBy + " LIMIT ? OFFSET ? ";
-                //System.out.println("\nprev query: " + query + "\n");
-
-            } else if (requestType.equals("sort")) {
-                // if request type is sort, then use the pre-existing sql query and set sub-request to sort
-                // check first if the sortBy parameter is equal to any of the preset to for security measures
-                // if the sortBy variable returned does not match any of the strings in stringSet revert to
-                // default string
-                session.setAttribute("sub-request", "sort");
-                sortBy = request.getParameter("sort-by");
-                if (!stringSet.contains(sortBy)) {
-                    sortBy = "ORDER BY title ASC, rating ASC";
-                    session.setAttribute("sortBy", sortBy);
-
-                } else
-                    session.setAttribute("sortBy", sortBy);
-
-                pageSize = Integer.parseInt(request.getParameter("page-size"));
-                session.setAttribute("pageSize", pageSize);
-
-                // fetch the previous sql query using session
-                String queryHistory = (String) session.getAttribute("queryHistory");
-                query = queryHistory + sortBy + " LIMIT ? OFFSET ?";
-                //System.out.println("\nquery with sort: " + query + "\n");
-
-            } else if (requestType.split("=")[0].equals("restore")) {
-
-                String restoreQuery = (String) session.getAttribute("restored-query");
-                // check if the user somehow went straight to a single movie page, if so, this
-                // safety net will still load a list of movies although this technically shouldn't
-                // happen.
-                if (restoreQuery != null && restoreQuery != "") {
-                    query = restoreQuery;
-                }
-            } else {
-                // clear previous cached sql session since we are starting a new request-type=search/browse
-                // this means default initializing the variable data
-                String queryHistory = "";
-                sortBy = "ORDER BY title ASC, rating ASC";
-                pageSize = 10;
-                pageNumber = 0;
-                session.setAttribute("queryHistory", queryHistory);
-                session.setAttribute("pageSize", pageSize);
-                session.setAttribute("pageNumber", pageNumber);
-                session.setAttribute("sortBy", sortBy);
-                session.setAttribute("sub-request", "");
-
-                // add the search/browse portion to the query
-                query = querySelectClause + queryAmendJoins + queryAmendConditions;
-                // assigns session queryHistory string to the new query
-                queryHistory = query;
-                // set it in the session
-                session.setAttribute("queryHistory", queryHistory);
-                // print out to debug
-                //System.out.println("queryHistory: " + queryHistory);
-
-                // add default sort and page number
-                query += " ORDER BY title ASC, rating ASC LIMIT 10;";
-            }
 
             // save query in case user directs to single move/star page
             session.setAttribute("restored-query", query);
@@ -311,6 +337,20 @@ public class MovieListServlet extends HttpServlet {
             System.out.println("placeholder values: " + (String) session.getAttribute("prefix"));
             statement.setString(paramIndex++, (String) session.getAttribute("prefix"));
         }
+        if (session.getAttribute("request-type").equals("fts")) {
+            // fetch the url query str and assign to urlQuery (i.e. request-type=fts="the string we are fetching")
+            String ftStr = (String) session.getAttribute("ftStr");
+            String likeStr = (String) session.getAttribute("likeStr");
+            int threshold = (Integer) session.getAttribute("threshold");
+            String fuzzy = (String) session.getAttribute("fuzzy");
+            System.out.println("ftStr: " + ftStr + "\nlikeStr: " + likeStr);
+
+            // update values
+            statement.setString(paramIndex++, likeStr);
+            statement.setString(paramIndex++, fuzzy);
+            statement.setInt(paramIndex++, threshold);
+            statement.setString(paramIndex++, ftStr);
+        }
         // check if there was a sub request
         String subRequest = (String) session.getAttribute("sub-request");
         if (subRequest.equals("next") || subRequest.equals("prev") || subRequest.equals("sort")) {
@@ -321,7 +361,6 @@ public class MovieListServlet extends HttpServlet {
             statement.setInt(paramIndex++, psize); // LIMIT
             statement.setInt(paramIndex++, offset); // OFFSET
             System.out.println("placeholder values: " + psize + " " + offset);
-
         }
     }
     protected String concatGenres(Connection connection, String movieId) throws SQLException {

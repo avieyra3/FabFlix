@@ -116,8 +116,7 @@ $('#autocomplete').autocomplete({
  */
 function handleNormalSearch(query) {
     console.log("doing normal search with query: " + query);
-    // TODO: you should do normal search here
-    window.location = "movie-list.html?request-type=search&title=" + query + "&year=&director=&star=";
+    window.location = "movie-list.html?request-type=fts=" + query;
 }
 
 // bind pressing enter key to a handler function
