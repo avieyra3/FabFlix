@@ -17,7 +17,7 @@ II. Project 2:
 III. Project 3:
 - Khoi: reCaptcha, HTTPS, Encrypt Password, Dashboard Login, Import XML
 - Alfonso: PreparedStatement, Dashboard and Stored Procedure
-- Demo Video URL: **Coming Soon**
+- Demo Video URL: https://youtu.be/B_m9mxBzXlY
 - PreparedStatement files: 
   - AddMovieListServlet.java,
     AddStarServlet.java,
@@ -31,6 +31,8 @@ III. Project 3:
     ShoppingCartServlet.java,
     SingleMovieServlet.java,
     SingleStarServlet.java,
+    UpdateSecurePasswordCustomer.java,
+    UpdateSecurePasswordEmployee.java,
     DomParser.java
 - XML parsing time optimization strategies:
   - Using batch insert to execute large amount of SQL statements all at once instead of one-by-one to reduce the overhead of communication

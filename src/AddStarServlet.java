@@ -91,6 +91,7 @@ public class AddStarServlet extends HttpServlet {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("ERROR:", e.getMessage());
             out.write(jsonObject.toString());
+            e.printStackTrace();
 
             response.setStatus(500);
         } finally {
