@@ -24,11 +24,10 @@ header {
     font-size: xxx-large;
 }
 .homepage{
-    display: flex;
-    align-items: center;
+    text-align: center;
     font-weight: bold;
     font-size: xxx-large;
-    margin-left: 250px;
+    margin-left: 642px;
 }
 nav {
     display: flex;

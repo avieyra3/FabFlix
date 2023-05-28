@@ -54,7 +54,7 @@ public class MovieSuggestionServlet extends HttpServlet {
 
             // get the query string from parameter
             String query = request.getParameter("query");
-
+            System.out.println("url query: " + query);
             // return the empty json array if query is null or empty
             if (query == null || query.trim().isEmpty()) {
                 response.getWriter().write(jsonArray.toString());
@@ -64,20 +64,23 @@ public class MovieSuggestionServlet extends HttpServlet {
             // tokenize string based on whitespace
             String[] tokenQueryArr = query.split("\\s+");
 
-            // print out tokenQueryArr to check valid output and concat a placeholder string for sql
+            // declare placeholder values
+            String likeStr = '%' + query + '%';
+            int threshold = (int)Math.round(query.length() * 0.30);
+            String ftStr = "";
+
+            // print out tokenQueryArr to check valid output and concatenate ftStr
             String tokens = "Tokens: ";
-            String placeholder = "";
             for (int i = 0; i < tokenQueryArr.length; i++) {
                 tokens += tokenQueryArr[i] + " ";
-                placeholder += "+" + tokenQueryArr[i] + "* ";
+                ftStr += "+" + tokenQueryArr[i] + "* ";
             }
-            System.out.println(tokens);
-            System.out.println("placeholder: " + placeholder);
-
+            System.out.println(tokens + "\nftStr: " + ftStr + "\nlikeStr: " + likeStr + "\nThreshold: " + threshold);
             // set up SQL full search string to concatenate with the query parameters
             // NOTE make sure you have performed the following SQL modification: ALTER TABLE movies ADD FULLTEXT(title);
             // before executing this string!!
-            String sqlStr = "SELECT * FROM movies WHERE MATCH(title) AGAINST ( ? IN BOOLEAN MODE) LIMIT 10";
+            String sqlStr = "select * FROM movies WHERE title LIKE ? OR edth(title, ?, ?) UNION " +
+                    "SELECT * FROM movies WHERE MATCH(title) AGAINST ( ? IN BOOLEAN MODE) LIMIT 10";
             System.out.println("Full Search query string: " + sqlStr);
 
             PrintWriter out = response.getWriter();
@@ -86,13 +89,18 @@ public class MovieSuggestionServlet extends HttpServlet {
                 // create prepared statement for the sql string
                 PreparedStatement fullSearchStatement = conn.prepareStatement(sqlStr);
                 // update the statement with the appropriate values
-                fullSearchStatement.setString(1, placeholder);
+                fullSearchStatement.setString(1, likeStr);
+                fullSearchStatement.setString(2, query);
+                fullSearchStatement.setInt(3, threshold);
+                fullSearchStatement.setString(4, ftStr);
                 // execute statement and save into results
                 ResultSet results = fullSearchStatement.executeQuery();
 
                 while(results.next()) {
                     String movieId = results.getString("id");
                     String movieName = results.getString("title");
+                    String movieYear = " (" + results.getString("year") + ")";
+                    movieName += movieYear;
                     System.out.println("movieId: " + movieId + " movieName: " + movieName);
                     jsonArray.add(generateJsonObject(movieId, movieName));
                 }
