@@ -55,7 +55,7 @@ public class MovieListActivity extends AppCompatActivity {
         // request type is GET
         final StringRequest searchRequest = new StringRequest(
                 Request.Method.GET,
-                baseURL + "/api/movielist?request-type=search&title=" + ftTitle + "&year=&director=&star=",
+                baseURL + "/api/movielist?request-type=fts=" + ftTitle,
                 response -> {
                     // TODO: should parse the json response to redirect to appropriate functions
                     //  upon different response value.
