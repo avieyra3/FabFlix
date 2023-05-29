@@ -24,9 +24,10 @@ header {
     font-size: xxx-large;
 }
 .homepage{
+    text-align: center;
     font-weight: bold;
     font-size: xxx-large;
-    margin-left: 250px;
+    margin-left: 642px;
 }
 nav {
     display: flex;
@@ -51,18 +52,40 @@ nav li {
 li a {
     color: white;
 }
-h1 {
+
+.autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
+.autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+.autocomplete-selected { background: #F0F0F0; }
+.autocomplete-suggestions strong { font-weight: normal; color: #3399FF; }
+.autocomplete-group { padding: 2px 5px; }
+.autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+.autocomplete-searchbox {
+    height: 50px;
+    width: 600px;
+}
+
+.full-text-container {
     display: flex;
     align-items: center;
+    text-align: center;
     justify-content: center;
+    padding-top: 75px;
 }
+
+input[type=text] {
+    border-radius: 10px;
+    border-color: darkslategray;
+    height: 75px;
+    width: 350px;
+    font-size: 26px;
+}
+
 .contain-three-links {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     height: 50vh;
-    padding: 50px 100px;
 }
 
 .row {
