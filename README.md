@@ -53,5 +53,5 @@ III. Project 3:
 IV. Project 4:
 - Khoi: Android, Submission
 - Alfonso: Full Text Search, Autocomplete, Fuzzy Search
-- Demo Video URL: **coming soon**
+- Demo Video URL: https://youtu.be/OBhlZz_Vsv4
 - Fuzzy Search Implementation: Our Fuzzy Search implementation involved the application of the flamingo library which contained a set of user-defined-functions. In particular, we made use of the edth user defined function. This function utlized a dynamic programming algorithm to calculate the levenshtein distance between two terms with a maximum edit distance. To achieve a good scope of relevant results, we normalized each search result by taking the length of the query string and calculating the number of characters that could differ by no more than 30% of its length. For example, if a query string was the length of 10 characters, then any movie title being compared could differ by 3 characters. We performed a UNION of this search with mysql's full text search along with mysql's pattern matching to generate reliable results for the user.
