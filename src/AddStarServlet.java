@@ -18,11 +18,11 @@ import java.sql.*;
 public class AddStarServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    private DataSource dataSource;
+    private DataSource masterSource;
 
     public void init(ServletConfig config) {
         try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+            masterSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/masterdb");
         } catch (NamingException e) {
             e.printStackTrace();
         }
@@ -30,7 +30,7 @@ public class AddStarServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        System.out.println("AddStarServlet doGet EXECUTING");
+        System.out.println("AddStarServlet doPost EXECUTING");
         response.setContentType("application/json");
         //get the star name and birth year from the request
         String starName = request.getParameter("starName");
@@ -50,7 +50,7 @@ public class AddStarServlet extends HttpServlet {
         System.out.println("\nstarName: " + starName + " birth year: " + birthYear + "\n");
         PrintWriter out = response.getWriter();
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = masterSource.getConnection()) {
             System.out.println("AddStarServlet Connection established!\n");
 
             // create call to procedure

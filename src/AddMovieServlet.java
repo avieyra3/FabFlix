@@ -18,11 +18,13 @@ import java.sql.*;
 public class AddMovieServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
+    private DataSource masterSource;
     private DataSource dataSource;
 
     public void init(ServletConfig config) {
         try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+            masterSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/masterdb");
+            dataSource =  (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
         } catch (NamingException e) {
             e.printStackTrace();
         }
@@ -59,7 +61,7 @@ public class AddMovieServlet extends HttpServlet {
 
         PrintWriter out = response.getWriter();
 
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = masterSource.getConnection()) {
             System.out.println("AddMovieServlet Connection established!\n");
 
             // create call to procedure
