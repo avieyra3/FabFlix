@@ -28,10 +28,12 @@ public class PaymentPageServlet extends HttpServlet{
 
     private static final long serialVersionUID = 1L;
     private DataSource dataSource;
+    private DataSource masterSource;
 
     public void init(ServletConfig config) {
         try {
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+            masterSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/masterdb");
         } catch (NamingException e) {
             e.printStackTrace();
         }
@@ -123,18 +125,25 @@ public class PaymentPageServlet extends HttpServlet{
                 //Insert into sales table with customerID and previousItems
                 java.sql.Date todaysDate = new java.sql.Date(System.currentTimeMillis());
                 for (String item : previousItems.keySet()) {
-                    String queryInsertSales = "INSERT INTO sales \n" +
-                            "VALUES (NULL, ?, ?, ?, ?);\n"; //(NULL, '" + customerID + "', '" + item + "', '" +
-                            //todaysDate + "', " + previousItems.get(item) + ");\n";
-                    System.out.println(queryInsertSales);
-                    PreparedStatement statementInsertSales = connection.prepareStatement(queryInsertSales);
-                    statementInsertSales.setString(1, customerID);
-                    statementInsertSales.setString(2, item);
-                    statementInsertSales.setDate(3, todaysDate);
-                    statementGetCustomerID.setInt(4, previousItems.get(item));
-                    int rowInserted = statementInsertSales.executeUpdate();
-                    statementInsertSales.close();
+                    try (Connection masterConn = masterSource.getConnection()) {
+                        String queryInsertSales = "INSERT INTO sales \n" +
+                                "VALUES (NULL, ?, ?, ?, ?);\n"; //(NULL, '" + customerID + "', '" + item + "', '" +
+                        //todaysDate + "', " + previousItems.get(item) + ");\n";
+                        System.out.println(queryInsertSales);
+                        PreparedStatement statementInsertSales = masterConn.prepareStatement(queryInsertSales);
+                        statementInsertSales.setString(1, customerID);
+                        statementInsertSales.setString(2, item);
+                        statementInsertSales.setDate(3, todaysDate);
+                        statementGetCustomerID.setInt(4, previousItems.get(item));
+                        int rowInserted = statementInsertSales.executeUpdate();
+                        statementInsertSales.close();
+                    } catch (Exception e) {
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject.addProperty("ERROR:", e.getMessage());
+                        out.write(jsonObject.toString());
 
+                        response.setStatus(500);
+                    }
                     //Add sales IDs to session's cache
                     String querySalesData = "SELECT LAST_INSERT_ID() AS id;\n";
                     System.out.println(querySalesData);
