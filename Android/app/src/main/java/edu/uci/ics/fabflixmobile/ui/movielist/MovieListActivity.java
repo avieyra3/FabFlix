@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MovieListActivity extends AppCompatActivity {
-    private final String host = "52.15.157.21";
+    private final String host = "3.130.24.161";
     private final String port = "8443";
     private final String domain = "s23-122b-web_dev";
     private final String baseURL = "https://" + host + ":" + port + "/" + domain;
@@ -55,7 +55,7 @@ public class MovieListActivity extends AppCompatActivity {
         // request type is GET
         final StringRequest searchRequest = new StringRequest(
                 Request.Method.GET,
-                baseURL + "/api/movielist?request-type=search&title=" + ftTitle + "&year=&director=&star=",
+                baseURL + "/api/movielist?request-type=fts=" + ftTitle,
                 response -> {
                     // TODO: should parse the json response to redirect to appropriate functions
                     //  upon different response value.

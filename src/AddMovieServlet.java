@@ -62,7 +62,7 @@ public class AddMovieServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try (Connection connection = masterSource.getConnection()) {
-            System.out.println("AddMovieServlet Connection established!\n");
+            System.out.println("MasterSource Connection established!\n");
 
             // create call to procedure
             String procedure = "CALL add_movie(?, ?, ?, ?, ?, ?)";

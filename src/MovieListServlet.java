@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.sql.*;
 import java.util.Set;
 import java.util.HashSet;
+import java.io.*;
 
 
 @WebServlet(name = "MovieListServlet", urlPatterns = "/api/movielist")
@@ -252,8 +253,30 @@ public class MovieListServlet extends HttpServlet {
             PreparedStatement preparedQuery = connection.prepareStatement(query);
             //sets value for the placeholders for execution
             updateStatement(preparedQuery, session);
+
+            // ----start of log time ------
+            long startTime = System.nanoTime();
+
             ResultSet result = preparedQuery.executeQuery();
-            //System.out.println("\nResult statement: " + result + "\n");
+
+            // ----end of log time -------
+            long endTime = System.nanoTime();
+            long elapsedTime = endTime - startTime;
+
+            // write to log to the root directory
+            String contextPath = request.getServletContext().getRealPath("/");
+            String logFilePath = contextPath + "timelog";
+            System.out.println("Writing TJ log to: " + logFilePath);
+            File logFile = new File(logFilePath);
+            if (!logFile.exists())
+                logFile.createNewFile();
+            try (FileWriter writer = new FileWriter(logFile, true)) {
+                System.out.println("TJ log: " + elapsedTime + "ns");
+                writer.write("TJ " + elapsedTime);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
 
             JsonArray jsonArray = new JsonArray();
             Integer totalResults = 0;

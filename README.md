@@ -1,20 +1,19 @@
-CS 122B  
-Team Name: s23-122b-web_dev  
+# CS 122B  
+### Team Name: s23-122b-web_dev
+### Team members: Khoi Pham and Alfonso Vieyra  
   
-Team members: Khoi Pham and Alfonso Vieyra  
-  
-I. Project 1:
+### I. Project 1:
 - Khoi: Movie List Page, Single Star Page, AWS, Report/README  
 - Alfonso: Database, Movie List Page, Single Movie Page, Jump Func, Extra Credit  
 - Demo Video URL: https://youtu.be/fNJNbm95sd0
 
-II. Project 2:  
+### II. Project 2:  
 - Khoi: Main Page, Searching, Movie List first 3 genres & stars, Single Pages, Shopping Cart/Payment, Submission  
 - Alfonso: Login Page, Browse, Sorting, Prev/Next, Jump Func, Beautify with CSS  
 - Demo Video URL: https://youtu.be/MoIh1h9q5MA
 - Substring Matching Design: only use LIKE '%%', which means the search term can be any substring and doesn't need to be at the beginning or ending. Also, no typo is allowed
-  
-III. Project 3:
+
+### III. Project 3:
 - Khoi: reCaptcha, HTTPS, Encrypt Password, Dashboard Login, Import XML
 - Alfonso: PreparedStatement, Dashboard and Stored Procedure
 - Demo Video URL: https://youtu.be/B_m9mxBzXlY
@@ -49,3 +48,16 @@ III. Project 3:
       Inserted 52339 stars_in_movies. Rejected 0 nulls.  
       Insert into genres_in_movies table...  
       Inserted 9840 genres_in_movies. Rejected 7 nulls.
+
+### IV. Project 4:
+- Khoi: Android, Submission
+- Alfonso: Full Text Search, Autocomplete, Fuzzy Search
+- Demo Video URL: https://youtu.be/OBhlZz_Vsv4
+- Fuzzy Search Implementation: Our Fuzzy Search implementation involved the application of the flamingo library which contained a set of user-defined-functions. In particular, we made use of the edth user defined function. This function utlized a dynamic programming algorithm to calculate the levenshtein distance between two terms with a maximum edit distance. To achieve a good scope of relevant results, we normalized each search result by taking the length of the query string and calculating the number of characters that could differ by no more than 30% of its length. For example, if a query string was the length of 10 characters, then any movie title being compared could differ by 3 characters. We performed a UNION of this search with mysql's full text search along with mysql's pattern matching to generate reliable results for the user.
+
+### V. Project 5:
+- Khoi:
+- Alfonso:
+- Demo Video URL: **coming soon**
+- Instruction of deployment:
+- **[>>REPORT README<<](project5/README.md)**
