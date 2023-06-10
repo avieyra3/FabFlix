@@ -30,7 +30,7 @@ public class TimeLogFilter implements Filter {
             logFile.createNewFile();
         }
         try (FileWriter writer = new FileWriter(logFile, true)) {
-            System.out.println("TS log: " + elapsedTime + "ns");
+            request.getServletContext().log("TS log: " + elapsedTime + "ns");
             writer.write(" TS " + elapsedTime + "\n");
         } catch (IOException e) {
             e.printStackTrace();

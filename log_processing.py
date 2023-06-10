@@ -1,4 +1,4 @@
-with open("timelog.txt", "r") as f:
+with open("timelog", "r") as f:
 
     average_tj: int = 0
     average_ts: int = 0
