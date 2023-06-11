@@ -59,5 +59,21 @@
 - Khoi:
 - Alfonso:
 - Demo Video URL: **coming soon**
-- Instruction of deployment:
 - **[>>REPORT README<<](project5/README.md)**
+- Instruction of deployment:
+  1. Single instance:
+     - Run createtable.sql, movie-data.sql, and stored-procedure.sql to populate the database
+     - Run UpdateSecurePasswordCustomers.java and UpdateSecurePasswordEmployees.java to encrypt the password
+     - Run DomParser.java to add more movies from XML files to the database
+     - Build a war file of the webapp and deploy it on the Tomcat web server 
+  2. Scaled instances:
+     1. Load balancer:
+        - Install Apache2 and related packages
+        - Configure files to connect to the two backend instances
+        - Modify security groups and open ports if needed
+        - Enable sticky session
+     2. Master:
+        - Same as single instance, but additionally...
+        - Create a MySQL user for remote access to the database
+     3. Slave:
+        - Same as single instance
