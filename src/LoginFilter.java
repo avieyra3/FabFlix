@@ -79,6 +79,7 @@ public class LoginFilter implements Filter {
         allowedURIs.add("api/login");
         allowedURIs.add("styles-login.css");
         allowedURIs.add("form-recaptcha");
+        allowedURIs.add("api/movielist");
 
         employeeURIs.add("_dashboard/index.html");
         employeeURIs.add("_dashboard/index.js");
