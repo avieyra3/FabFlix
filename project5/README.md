@@ -62,7 +62,7 @@
           cp timelog /home/ubuntu/s23-122b-web_dev/
           exit
           cd s23-122b-web_dev
-          sudo python3 log_processing.py file_to_process
+          sudo python3 log_processing.py timelog
           ```
 
 - # JMeter TS/TJ Time Measurement Report
