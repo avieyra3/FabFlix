@@ -60,20 +60,19 @@
           sudo su
           cd /var/lib/tomcat10/webapps/s23-122b-web_dev
           cp timelog /home/ubuntu/s23-122b-web_dev/
-          cd ~
           exit
           cd s23-122b-web_dev
-          sudo python3 timelog-script.py
+          sudo python3 log_processing.py
           ```
 
 - # JMeter TS/TJ Time Measurement Report
 
-| **Single-instance Version Test Plan**          | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
-|------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
-| Case 1: HTTP/1 thread                          | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
-| Case 2: HTTP/10 threads                        | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
-| Case 3: HTTPS/10 threads                       | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
-| Case 4: HTTP/10 threads/No connection pooling  | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
+| **Single-instance Version Test Plan**          | **Graph Results Screenshot**                       | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
+|------------------------------------------------|----------------------------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
+| Case 1: HTTP/1 thread                          | ![](img/nonscaled-1thrds-graph-http-pooling.png)   | 206                        | 48                                  | 46                        | ??           |
+| Case 2: HTTP/10 threads                        | ![](img/nonscaled-10thrds-grapth-http-pooling.png) | 480                        | 234                                 | 233                       | ??           |
+| Case 3: HTTPS/10 threads                       | ![](path to image in img/)                         | ??                         | ??                                  | ??                        | ??           |
+| Case 4: HTTP/10 threads/No connection pooling  | ![](img/nonscaled-10thrds-grapth-http.png)         | 465                        | 317                                 | 307                       | ??           |
 
 | **Scaled Version Test Plan**                   | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
 |------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|

@@ -263,21 +263,6 @@ public class MovieListServlet extends HttpServlet {
             long endTime = System.nanoTime();
             long elapsedTime = endTime - startTime;
 
-            // write to log to the root directory
-            String contextPath = request.getServletContext().getRealPath("/");
-            String logFilePath = contextPath + "timelog";
-            System.out.println("Writing TJ log to: " + logFilePath);
-            File logFile = new File(logFilePath);
-            if (!logFile.exists())
-                logFile.createNewFile();
-            try (FileWriter writer = new FileWriter(logFile, true)) {
-                System.out.println("TJ log: " + elapsedTime + "ns");
-                writer.write("TJ " + elapsedTime);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
             JsonArray jsonArray = new JsonArray();
             Integer totalResults = 0;
             while (result.next()) {
@@ -287,14 +272,15 @@ public class MovieListServlet extends HttpServlet {
                 String movie_year = result.getString("year");
                 String movie_director = result.getString("director");
                 String movie_rating = result.getString("rating");
-                String movie_genres = concatGenres(connection, movie_id);
-                String[] starsNstarsID = concatStarsNId(connection, movie_id);
+
+                // sum elapsed time with the request session attribute
+                String movie_genres = concatGenres(connection, movie_id, request);
+                elapsedTime += (long) request.getAttribute("TJ");
+                String[] starsNstarsID = concatStarsNId(connection, movie_id, request);
+                elapsedTime += (long) request.getAttribute("TJ");
+
                 String movie_stars = starsNstarsID[0];
                 String movie_star_IDs = starsNstarsID[1];
-
-//                System.out.println("movie id: " + movie_id + " title: " + movie_title + " year: " + movie_year +
-//                        " director: " + movie_director + " rating: " + movie_rating + " genres: " + movie_genres +
-//                        " stars: " + movie_stars);
 
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("movie_id", movie_id);
@@ -314,7 +300,7 @@ public class MovieListServlet extends HttpServlet {
             statement.close();
 
             request.getServletContext().log("getting " + jsonArray.size() + " results");
-
+            request.setAttribute("TJ", elapsedTime);
             out.write(jsonArray.toString());
             response.setStatus(200);
 
@@ -386,7 +372,7 @@ public class MovieListServlet extends HttpServlet {
             System.out.println("placeholder values: " + psize + " " + offset);
         }
     }
-    protected String concatGenres(Connection connection, String movieId) throws SQLException {
+    protected String concatGenres(Connection connection, String movieId, HttpServletRequest request) throws SQLException {
         String movie_genres = "";
         String queryGenres = "SELECT genres.name\n" +
                 "FROM movies JOIN genres_in_movies JOIN genres\n" +
@@ -395,7 +381,17 @@ public class MovieListServlet extends HttpServlet {
                 "ORDER BY genres.name LIMIT 3;";
         PreparedStatement statementGenres = connection.prepareStatement(queryGenres);
         statementGenres.setString(1, movieId);
+
+        // ----start of log time ------
+        long startTime = System.nanoTime();
+
         ResultSet resultGenres = statementGenres.executeQuery();
+
+        // ----end of log time -------
+        long endTime = System.nanoTime();
+        long elapsedTime = endTime - startTime;
+        request.setAttribute("TJ", elapsedTime);
+        System.out.println("concatGenres TJ time: " + elapsedTime);
         while (resultGenres.next()) {
             movie_genres += resultGenres.getString("name") + ", ";
         }
@@ -404,7 +400,7 @@ public class MovieListServlet extends HttpServlet {
         return movie_genres.substring(0, Math.max(0, movie_genres.length() - 2));
     }
 
-    protected String[] concatStarsNId(Connection connection, String movie_Id)
+    protected String[] concatStarsNId(Connection connection, String movie_Id, HttpServletRequest request)
             throws SQLException {
         String[] strArr = new String[2];
         String movie_stars = "";
@@ -417,7 +413,18 @@ public class MovieListServlet extends HttpServlet {
                 "ORDER BY movie_counts DESC, stars.name ASC LIMIT 3";
         PreparedStatement statementStars = connection.prepareStatement(queryStars);
         statementStars.setString(1, movie_Id);
+
+        // ----start of log time ------
+        long startTime = System.nanoTime();
+
         ResultSet resultStars = statementStars.executeQuery();
+
+        // ----end of log time -------
+        long endTime = System.nanoTime();
+        long elapsedTime = endTime - startTime;
+        System.out.println("concatStars tj time: " + elapsedTime);
+        request.setAttribute("TJ", elapsedTime);
+
         while (resultStars.next()) {
             movie_stars += resultStars.getString("name") + ", ";
             movie_star_IDs += resultStars.getString("id") + ", ";

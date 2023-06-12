@@ -21,6 +21,9 @@ public class TimeLogFilter implements Filter {
         long endTime = System.nanoTime();
         long elapsedTime = endTime - startTime;
 
+        // get tj time
+        long tjTime = (long) request.getAttribute("TJ");
+
         // Log the time taken in nanoseconds
         String contextPath = request.getServletContext().getRealPath("/");
         String logFilePath = contextPath + "timelog";
@@ -31,7 +34,7 @@ public class TimeLogFilter implements Filter {
         }
         try (FileWriter writer = new FileWriter(logFile, true)) {
             request.getServletContext().log("TS log: " + elapsedTime + "ns");
-            writer.write(" TS " + elapsedTime + "\n");
+            writer.write("TJ " + tjTime + " TS " + elapsedTime + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
