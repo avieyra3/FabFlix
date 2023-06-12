@@ -255,12 +255,12 @@ public class MovieListServlet extends HttpServlet {
             updateStatement(preparedQuery, session);
 
             // ----start of log time ------
-            long startTime = System.nanoTime();
+            long startTime = System.currentTimeMillis();
 
             ResultSet result = preparedQuery.executeQuery();
 
             // ----end of log time -------
-            long endTime = System.nanoTime();
+            long endTime = System.currentTimeMillis();
             long elapsedTime = endTime - startTime;
 
             JsonArray jsonArray = new JsonArray();
@@ -383,12 +383,12 @@ public class MovieListServlet extends HttpServlet {
         statementGenres.setString(1, movieId);
 
         // ----start of log time ------
-        long startTime = System.nanoTime();
+        long startTime = System.currentTimeMillis();
 
         ResultSet resultGenres = statementGenres.executeQuery();
 
         // ----end of log time -------
-        long endTime = System.nanoTime();
+        long endTime = System.currentTimeMillis();
         long elapsedTime = endTime - startTime;
         request.setAttribute("TJ", elapsedTime);
         System.out.println("concatGenres TJ time: " + elapsedTime);
@@ -415,12 +415,12 @@ public class MovieListServlet extends HttpServlet {
         statementStars.setString(1, movie_Id);
 
         // ----start of log time ------
-        long startTime = System.nanoTime();
+        long startTime = System.currentTimeMillis();
 
         ResultSet resultStars = statementStars.executeQuery();
 
         // ----end of log time -------
-        long endTime = System.nanoTime();
+        long endTime = System.currentTimeMillis();
         long elapsedTime = endTime - startTime;
         System.out.println("concatStars tj time: " + elapsedTime);
         request.setAttribute("TJ", elapsedTime);
