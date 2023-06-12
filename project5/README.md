@@ -67,12 +67,12 @@
 
 - # JMeter TS/TJ Time Measurement Report
 
-| **Single-instance Version Test Plan**          | **Graph Results Screenshot**                       | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
-|------------------------------------------------|----------------------------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
-| Case 1: HTTP/1 thread                          | ![](img/nonscaled-1thrds-graph-http-pooling.png)   | 206                        | 48                                  | 46                        | ??           |
-| Case 2: HTTP/10 threads                        | ![](img/nonscaled-10thrds-grapth-http-pooling.png) | 480                        | 234                                 | 233                       | ??           |
-| Case 3: HTTPS/10 threads                       | ![](path to image in img/)                         | ??                         | ??                                  | ??                        | ??           |
-| Case 4: HTTP/10 threads/No connection pooling  | ![](img/nonscaled-10thrds-grapth-http.png)         | 465                        | 317                                 | 307                       | ??           |
+| **Single-instance Version Test Plan**          | **Graph Results Screenshot**                        | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
+|------------------------------------------------|-----------------------------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
+| Case 1: HTTP/1 thread                          | ![](img/nonscaled-1thrds-graph-http-pooling.png)    | 206                        | 48                                  | 46                        | ??           |
+| Case 2: HTTP/10 threads                        | ![](img/nonscaled-10thrds-grapth-http-pooling.png)  | 480                        | 234                                 | 233                       | ??           |
+| Case 3: HTTPS/10 threads                       | ![](img/nonscaled-10thrds-grapth-https-pooling.png) | 528                        | 367                                 | 363                       | ??           |
+| Case 4: HTTP/10 threads/No connection pooling  | ![](img/nonscaled-10thrds-grapth-http.png)          | 465                        | 317                                 | 307                       | ??           |
 
 | **Scaled Version Test Plan**                   | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
 |------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
