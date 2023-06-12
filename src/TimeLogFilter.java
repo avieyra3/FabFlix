@@ -26,7 +26,7 @@ public class TimeLogFilter implements Filter {
 
         // Log the time taken in nanoseconds
         String contextPath = request.getServletContext().getRealPath("/");
-        String logFilePath = contextPath + "timelog";
+        String logFilePath = "/home/ubuntu/s23-122b-web_dev/timelog";
         System.out.println("Writing TS log to: " + logFilePath);
         File logFile = new File(logFilePath);
         if (!logFile.exists()) {
