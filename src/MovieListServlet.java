@@ -55,7 +55,7 @@ public class MovieListServlet extends HttpServlet {
         String queryAmendJoins = ""; // this is sql string that will include info from search/browse
         String queryAmendConditions = "WHERE 1=1 "; // this is sql string that will include info from search/browse
         String sortBy = "ORDER BY title ASC, rating ASC"; // the default sort setting
-        Integer pageSize = 10; // the default page size
+        Integer pageSize = 50; // the default page size
         Integer pageNumber = 0;
         stringSet = sortSet(); // instantiate the set with the sort associated statements
 
@@ -220,7 +220,7 @@ public class MovieListServlet extends HttpServlet {
             // this means default initializing the variable data
             String queryHistory = "";
             sortBy = "ORDER BY title ASC, rating ASC";
-            pageSize = 10;
+            pageSize = 50;
             pageNumber = 0;
             session.setAttribute("queryHistory", queryHistory);
             session.setAttribute("pageSize", pageSize);
